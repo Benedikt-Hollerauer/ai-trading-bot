@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "trading-bot"
+name = "ai-trading-bot"
 version = "0.1.0"

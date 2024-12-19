@@ -1,5 +1,5 @@
 [package]
-name = "trading-bot"
+name = "ai-trading-bot"
 version = "0.1.0"
 edition = "2021"
 

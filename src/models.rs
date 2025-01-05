@@ -1,7 +1,27 @@
+use std::fmt::format;
 use std::time::SystemTime;
+use crate::errors::AppErrors;
 
-struct Money {
+pub struct Money {
     amount: f64
+}
+
+impl Money {
+    pub fn new(amount: f64) -> Result<Self, AppErrors> {
+        let amount_str = amount.to_string();
+        let digits_count = if let Some(pos) = amount_str.find('.') {
+            amount_str[pos + 1..].trim_end_matches('0').len()
+        } else {
+            0
+        };
+        if amount < 0.0 {
+            Err(AppErrors::ModelCreationError(format!("The money amount can't be below 0. Amount provided: {amount}")))
+        } else if digits_count > 2 {
+            Err(AppErrors::ModelCreationError(format!("There were too many digits. Amount provided: {amount}")))
+        } else {
+            Ok(Money { amount })
+        }
+    }
 }
 
 struct Order {

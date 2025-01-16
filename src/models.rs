@@ -1,4 +1,3 @@
-use std::fmt::format;
 use std::time::SystemTime;
 use crate::errors::AppErrors;
 
@@ -24,14 +23,14 @@ impl Money {
     }
 }
 
-struct Order {
-    order_id: String,
-    amount: Money,
-    order_type: OrderType,
-    timestamp: SystemTime
+pub struct Order {
+    pub order_id: String,
+    pub amount: Money,
+    pub order_type: OrderType,
+    pub timestamp: SystemTime
 }
 
-enum OrderType {
+pub enum OrderType {
     Buy,
     Sell
 }

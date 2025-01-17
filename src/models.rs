@@ -1,3 +1,4 @@
+use std::string::ToString;
 use std::time::SystemTime;
 use crate::errors::AppErrors;
 
@@ -25,6 +26,7 @@ impl Money {
 
 pub struct Order {
     pub order_id: String,
+    pub stock_id: StockId,
     pub amount: Money,
     pub order_type: OrderType,
     pub timestamp: SystemTime
@@ -33,4 +35,13 @@ pub struct Order {
 pub enum OrderType {
     Buy,
     Sell
+}
+
+pub enum StockId {
+    Nvidia,
+    NotAStockMock
+}
+
+pub struct StockData {
+
 }

@@ -16,8 +16,9 @@ pub struct AiServiceLive;
 
 impl TradingApiService for TradingApiServiceLive {
     fn get_stock_data(stock_id: StockId) -> Result<StockData, AppErrors> {
-        todo!()
+
     }
+
     fn place_order(order: Order) -> Result<bool, AppErrors> {
         todo!()
     }

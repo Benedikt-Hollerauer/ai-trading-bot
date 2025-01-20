@@ -45,3 +45,7 @@ pub enum StockId {
 pub struct StockData {
 
 }
+
+pub struct Config {
+    pub alpha_vantage_api_key: String
+}

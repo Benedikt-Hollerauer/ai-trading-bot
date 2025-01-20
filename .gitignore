@@ -96,4 +96,6 @@ test/rustdoc-gui/src/**.lock
 flake.lock
 /default.nix
 
+config.rs
+
 # Before adding new lines, see the comment at the top.

@@ -48,6 +48,7 @@ mod AiService {
     use crate::errors::AppErrors;
     use crate::models::{Order, StockData};
     use crate::services::AiServiceLive;
+    use crate::services::AiService;
 
 
     #[test]

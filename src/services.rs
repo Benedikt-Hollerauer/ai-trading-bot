@@ -1,7 +1,7 @@
+use alpha_vantage::stock_time::StockFunction;
 use crate::errors::AppErrors;
 use crate::models::{Order, StockData, Stock};
 use crate::config::config;
-use alphavantage::blocking::Client;
 
 pub trait TradingApiService {
     fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
@@ -18,11 +18,9 @@ pub struct AiServiceLive;
 
 impl TradingApiService for TradingApiServiceLive {
     fn get_stock_data(stock: Stock) -> Result<StockData, AppErrors> {
-        let client = Client::new(config.alpha_vantage_api_key);
-        let time_series = client
-            .get_time_series_monthly(&*stock.get_ticker_symbol())
-            .unwrap(); // TODO error handeling
-        println!("{:?}", time_series);
+        let api_key = alpha_vantage::set_api(config.alpha_vantage_api_key, reqwest::Client::new());
+        let test = api_key.stock_time(StockFunction::Monthly, &stock.get_ticker_symbol());
+        println!("{:?}", test.json().await.unwrap());
         Ok(
             StockData {test: "".to_string()}
         )

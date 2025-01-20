@@ -4,4 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-alphavantage = { version = "0.7.1", features = ["blocking"] }
+alpha_vantage = "0.11.0"
+reqwest = "0.12.12"

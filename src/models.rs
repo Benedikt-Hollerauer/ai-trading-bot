@@ -24,9 +24,23 @@ impl Money {
     }
 }
 
+pub struct Stock {
+    ticker_symbol: String
+}
+
+impl Stock {
+    pub fn new(ticker_symbol: String) -> Stock {
+        Stock {ticker_symbol}
+    }
+
+    pub fn get_ticker_symbol(self) -> String {
+        self.ticker_symbol
+    }
+}
+
 pub struct Order {
     pub order_id: String,
-    pub stock_id: StockId,
+    pub stock_id: Stock,
     pub amount: Money,
     pub order_type: OrderType,
     pub timestamp: SystemTime
@@ -37,15 +51,11 @@ pub enum OrderType {
     Sell
 }
 
-pub enum StockId {
-    Nvidia,
-    NotAStockMock
-}
 
 pub struct StockData {
-
+    pub test: String
 }
 
-pub struct Config {
-    pub alpha_vantage_api_key: String
+pub struct Config<'a> {
+    pub alpha_vantage_api_key: &'a str
 }

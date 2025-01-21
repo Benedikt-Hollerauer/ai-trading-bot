@@ -51,9 +51,26 @@ pub enum OrderType {
     Sell
 }
 
+#[derive(Debug)]
+pub struct StockPricePerformance {
+    pub date: String,
+    pub open: String,
+    pub high: String,
+    pub low: String
+}
 
+#[derive(Debug)]
+pub struct News {
+    title: String,
+    summary: String,
+    time_published: String
+}
+
+#[derive(Debug)]
 pub struct StockData {
-    pub test: String
+    pub ticker_symbol: String,
+    pub stock_price_performance: Vec<StockPricePerformance>,
+    pub news: Vec<News>
 }
 
 pub struct Config<'a> {

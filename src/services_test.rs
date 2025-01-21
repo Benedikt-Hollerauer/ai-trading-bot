@@ -9,7 +9,8 @@ mod TradingApiService {
     #[test]
     async fn test_get_stock_data_method_success() {
         let maybe_stock_data: Result<StockData, AppErrors> = TradingApiServiceLive::get_stock_data(Stock::new("GOOG".to_string())).await;
-        assert!(maybe_stock_data.is_ok())
+        println!("{:?}", maybe_stock_data.ok().unwrap());
+        //assert!(maybe_stock_data.is_ok())
     }
 
     #[test]
@@ -55,7 +56,9 @@ mod AiService {
     #[test]
     fn test_get_order_advice_method_success() {
         let test_stock_data: StockData = StockData {
-            test: "test".to_string()
+            ticker_symbol: "GOOG".to_string(),
+            stock_price_performance: todo!(),
+            news: todo!()
         };
         let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(test_stock_data);
         assert!(maybe_order_advice.is_ok())
@@ -64,7 +67,9 @@ mod AiService {
     #[test]
     fn test_get_order_advice_method_failure() {
         let test_stock_data: StockData = StockData {
-            test: "test".to_string()
+            ticker_symbol: "GOOG".to_string(),
+            stock_price_performance: todo!(),
+            news: todo!()
         };
         let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(test_stock_data);
         assert!(maybe_order_advice.is_err())

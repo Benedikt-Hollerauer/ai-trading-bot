@@ -1,5 +1,6 @@
 use std::string::ToString;
 use std::time::SystemTime;
+use serde::{Deserialize, Serialize};
 use crate::errors::AppErrors;
 
 pub struct Money {
@@ -59,11 +60,16 @@ pub struct StockPricePerformance {
     pub low: String
 }
 
-#[derive(Debug)]
+#[derive(Deserialize, Debug)]
 pub struct News {
-    title: String,
-    summary: String,
-    time_published: String
+    pub title: String,
+    pub summary: String,
+    pub time_published: String
+}
+
+#[derive(Deserialize, Debug)]
+pub struct NewsApiResponse {
+    pub feed: Vec<News>,
 }
 
 #[derive(Debug)]

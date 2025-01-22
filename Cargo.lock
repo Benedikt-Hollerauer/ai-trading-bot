@@ -23,6 +23,8 @@ version = "0.1.0"
 dependencies = [
  "alpha_vantage",
  "reqwest",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 

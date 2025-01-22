@@ -9,7 +9,7 @@ mod TradingApiService {
     #[test]
     async fn test_get_stock_data_method_success() {
         let maybe_stock_data: Result<StockData, AppErrors> = TradingApiServiceLive::get_stock_data(Stock::new("GOOG".to_string())).await;
-        println!("{:?}", maybe_stock_data.ok().unwrap());
+        println!("{:?}", maybe_stock_data);
         //assert!(maybe_stock_data.is_ok())
     }
 

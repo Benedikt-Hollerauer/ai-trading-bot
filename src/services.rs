@@ -1,7 +1,7 @@
-use std::time::SystemTime;
 use alpha_vantage::stock_time::StockFunction;
+use reqwest::Client;
 use crate::errors::AppErrors;
-use crate::models::{Order, StockData, Stock, StockPricePerformance};
+use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsApiResponse};
 use crate::config::config;
 
 pub trait TradingApiService {
@@ -39,24 +39,33 @@ impl TradingApiService for TradingApiServiceLive {
             Err(error) => Err(AppErrors::GetStockDataError(error.to_string())),
         };
 
-        let earnings = api_key.custom("NEWS_SENTIMENT")
-            .json::<String>()
+        let client = Client::new();
+        let url = "https://www.alphavantage.co/query";
+        let params = [
+            ("function", "NEWS_SENTIMENT"),
+            ("tickers", "AAPL,MSFT"),
+            ("apikey", config.alpha_vantage_api_key),
+        ];
+
+        let response = client.get(url)
+            .query(&params)
+            .send()
             .await;
 
-        let earning_reports = match earnings {
-            Ok(earning_reports) => Ok(
-                earning_reports
-            ),
-            Err(error) => Err(AppErrors::GetStockDataError(error.to_string()))
+        let news: Result<Vec<News>, AppErrors> = match response {
+            Ok(news_response) =>
+                match news_response.json::<NewsApiResponse>().await {
+                    Ok(news_api_response) => Ok(news_api_response.feed),
+                    Err(error) => Err(AppErrors::GetStockDataError(error.to_string()))
+                }
+            Err(error) => Err(AppErrors::GetStockDataError(error.to_string())),
         };
-
-        println!("{:?}", earning_reports);
 
         Ok(
             StockData {
                 ticker_symbol: ticker_symbol.to_string(),
                 stock_price_performance: stock_price_performance?,
-                news: todo!()
+                news: news?
             }
         )
     }

@@ -1,12 +1,16 @@
 use alpha_vantage::stock_time::StockFunction;
 use reqwest::Client;
 use crate::errors::AppErrors;
-use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsApiResponse};
+use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsApiResponse, OrderType};
 use crate::config::config;
+use ibapi::contracts::Contract;
+use ibapi::market_data::realtime::{BarSize, WhatToShow};
+use ibapi::Client as IbClient;
+use ibapi::orders::{order_builder, Action, PlaceOrder};
 
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
-    fn place_order(order: Order) -> Result<bool, AppErrors>;
+    fn place_order(order: Order) -> Result<(), AppErrors>;
 }
 
 pub struct TradingApiServiceLive;
@@ -70,8 +74,34 @@ impl TradingApiService for TradingApiServiceLive {
         )
     }
 
-    fn place_order(order: Order) -> Result<bool, AppErrors> {
-        todo!()
+    fn place_order(order: Order) -> Result<(), AppErrors> {
+        let connection_url = "";
+        let contract = Contract::stock(&*order.stock.get_ticker_symbol());
+        let action = match order.order_type {
+            OrderType::Buy => Action::Buy,
+            OrderType::Sell => Action::Sell
+        };
+        let order = IbClient::connect(connection_url, 100)
+            .map(|client: IbClient|
+                 (order_builder::market_order(
+                     action,
+                    1.0
+                 ), client)
+            ).and_then(|(order, client)|
+                client.place_order(
+                    client.next_order_id(),
+                    &contract,
+                    &order
+                )
+            ).map(|subscription|
+                for event in subscription {
+                    if let PlaceOrder::ExecutionData(data) = event {
+                        println!("{:?}", data);
+                    } else {
+                        println!("{:?}", event);
+                    }
+                }
+            );
     }
 }
 

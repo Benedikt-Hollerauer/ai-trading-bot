@@ -43,7 +43,7 @@ impl TradingApiService for TradingApiServiceLive {
         let url = "https://www.alphavantage.co/query";
         let params = [
             ("function", "NEWS_SENTIMENT"),
-            ("tickers", "AAPL,MSFT"),
+            ("tickers", &*ticker_symbol),
             ("apikey", config.alpha_vantage_api_key),
         ];
 

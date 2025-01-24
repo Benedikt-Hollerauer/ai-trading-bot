@@ -1,16 +1,17 @@
 use alpha_vantage::stock_time::StockFunction;
 use reqwest::Client;
 use crate::errors::AppErrors;
-use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsApiResponse, OrderType};
+use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsApiResponse, OrderType, Money};
 use crate::config::config;
 use ibapi::contracts::Contract;
-use ibapi::market_data::realtime::{BarSize, WhatToShow};
 use ibapi::Client as IbClient;
 use ibapi::orders::{order_builder, Action, PlaceOrder};
 
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
     fn place_order(order: Order) -> Result<(), AppErrors>;
+    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<f64, AppErrors>;
+    fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors>;
 }
 
 pub struct TradingApiServiceLive;
@@ -102,6 +103,14 @@ impl TradingApiService for TradingApiServiceLive {
                     }
                 }
             );
+    }
+
+    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<f64, AppErrors> {
+        todo!()
+    }
+
+    fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors> {
+        todo!()
     }
 }
 

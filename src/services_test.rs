@@ -23,12 +23,12 @@ mod TradingApiService {
     async fn test_place_order_method_success() {
         let order_success_mock: Order = Order {
             order_id: "1".to_string(),
-            stock_id: Stock::new("GOOG".to_string()),
+            stock: Stock::new("GOOG".to_string()),
             amount: Money::new(1.1).unwrap(),
             order_type: OrderType::Buy,
             timestamp: SystemTime::now()
         };
-        let maybe_stock_data: Result<bool, AppErrors> = TradingApiServiceLive::place_order(order_success_mock);
+        let maybe_stock_data: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_success_mock);
         assert!(maybe_stock_data.is_ok())
     }
 
@@ -36,12 +36,40 @@ mod TradingApiService {
     async fn test_place_order_method_failure() {
         let order_failure_mock: Order = Order {
             order_id:  "1".to_string(),
-            stock_id: Stock::new("GOOG".to_string()),
+            stock: Stock::new("GOOG".to_string()),
             amount: Money::new(1.1).unwrap(),
             order_type: OrderType::Buy,
             timestamp: SystemTime::now()
         };
-        let maybe_stock_data: Result<bool, AppErrors> = TradingApiServiceLive::place_order(order_failure_mock);
+        let maybe_stock_data: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_failure_mock);
+        assert!(maybe_stock_data.is_err())
+    }
+
+    #[test]
+    async fn test_convert_money_amount_to_stock_quantity_method_success() {
+        let money_mock = Money::new(1.1).unwrap();
+        let maybe_stock_data: Result<f64, AppErrors> = TradingApiServiceLive::convert_money_amount_to_stock_quantity(money_mock, "GOOG".to_string());
+        println!("{:?}", maybe_stock_data);
+        //assert!(maybe_stock_data.is_ok())
+    }
+
+    #[test]
+    async fn test_convert_money_amount_to_stock_quantity_method_failure() {
+        let money_mock = Money::new(1.1).unwrap();
+        let maybe_stock_data: Result<f64, AppErrors> = TradingApiServiceLive::convert_money_amount_to_stock_quantity(money_mock, "not_a_ticker_symbol".to_string());
+        assert!(maybe_stock_data.is_err())
+    }
+
+    #[test]
+    async fn test_get_quantity_to_sell_everything_method_success() {
+        let maybe_stock_data: Result<f64, AppErrors> = TradingApiServiceLive::get_quantity_to_sell_everything("GOOG".to_string());
+        println!("{:?}", maybe_stock_data);
+        //assert!(maybe_stock_data.is_ok())
+    }
+
+    #[test]
+    async fn test_get_quantity_to_sell_everything_method_failure() {
+        let maybe_stock_data: Result<f64, AppErrors> = TradingApiServiceLive::get_quantity_to_sell_everything("not_a_ticker_symbol".to_string());
         assert!(maybe_stock_data.is_err())
     }
 }

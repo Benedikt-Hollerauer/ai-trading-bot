@@ -5,6 +5,7 @@ use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsAp
 use crate::config::config;
 use ibapi::contracts::Contract;
 use ibapi::Client as IbClient;
+use ibapi::market_data::realtime::{BarSize, WhatToShow};
 use ibapi::orders::{order_builder, Action, PlaceOrder};
 
 pub trait TradingApiService {
@@ -82,31 +83,39 @@ impl TradingApiService for TradingApiServiceLive {
             OrderType::Buy => Action::Buy,
             OrderType::Sell => Action::Sell
         };
-        let order = IbClient::connect(connection_url, 100)
-            .map(|client: IbClient|
-                 (order_builder::market_order(
-                     action,
-                    1.0
-                 ), client)
-            ).and_then(|(order, client)|
-                client.place_order(
-                    client.next_order_id(),
-                    &contract,
-                    &order
-                )
-            ).map(|subscription|
-                for event in subscription {
-                    if let PlaceOrder::ExecutionData(data) = event {
-                        println!("{:?}", data);
-                    } else {
-                        println!("{:?}", event);
-                    }
-                }
-            );
+        //let order = IbClient::connect(connection_url, 100)
+        //    .map(|client: IbClient|
+        //         (order_builder::market_order(
+        //             action,
+        //            1.0
+        //         ), client)
+        //    ).and_then(|(order, client)|
+        //        client.place_order(
+        //            client.next_order_id(),
+        //            &contract,
+        //            &order
+        //        )
+        //    ).map(|subscription|
+        //        for event in subscription {
+        //            if let PlaceOrder::ExecutionData(data) = event {
+        //                println!("{:?}", data);
+        //            } else {
+        //                println!("{:?}", event);
+        //            }
+        //        }
+        //    );
+        todo!()
     }
 
     fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<f64, AppErrors> {
-        todo!()
+        let connection_url = "127.0.0.1:4002";
+        let contract = Contract::stock(&*ticker_symbol);
+        let client = IbClient::connect(connection_url, 1).expect("Connection to TWS failed!"); // TODO add error handeling
+        let subscription = client
+            .realtime_bars(&contract, BarSize::Sec5, WhatToShow::Trades, false)
+            .expect("Real-time bars request failed!"); // TODO add error handeling
+        println!("{:?}", subscription);
+        Ok(1.2)
     }
 
     fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors> {

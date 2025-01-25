@@ -1,9 +1,9 @@
 mod trading_api_service {
-    use std::time::SystemTime;
     use crate::errors::AppErrors;
-    use crate::services::TradingApiServiceLive;
+    use crate::models::{Money, Order, OrderType, Stock, StockData};
     use crate::services::TradingApiService;
-    use crate::models::{Money, Order, OrderType, StockData, Stock};
+    use crate::services::TradingApiServiceLive;
+    use std::time::SystemTime;
     use tokio::test;
 
     #[test]
@@ -77,8 +77,8 @@ mod trading_api_service {
 mod ai_service {
     use crate::errors::AppErrors;
     use crate::models::{Order, StockData};
-    use crate::services::AiServiceLive;
     use crate::services::AiService;
+    use crate::services::AiServiceLive;
 
 
     #[test]

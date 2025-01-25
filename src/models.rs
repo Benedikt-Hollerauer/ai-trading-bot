@@ -1,7 +1,7 @@
+use crate::errors::AppErrors;
+use serde::Deserialize;
 use std::string::ToString;
 use std::time::SystemTime;
-use serde::{Deserialize, Serialize};
-use crate::errors::AppErrors;
 
 pub struct Money {
     amount: f64

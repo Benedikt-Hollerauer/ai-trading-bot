@@ -1,12 +1,12 @@
-use alpha_vantage::stock_time::StockFunction;
-use reqwest::Client;
-use crate::errors::AppErrors;
-use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsApiResponse, OrderType, Money};
 use crate::config::CONFIG;
+use crate::errors::AppErrors;
+use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockPricePerformance};
+use alpha_vantage::stock_time::StockFunction;
 use ibapi::contracts::Contract;
-use ibapi::Client as IbClient;
 use ibapi::market_data::realtime::{BarSize, WhatToShow};
-use ibapi::orders::{order_builder, Action, PlaceOrder};
+use ibapi::orders::Action;
+use ibapi::Client as IbClient;
+use reqwest::Client;
 
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
@@ -114,7 +114,7 @@ impl TradingApiService for TradingApiServiceLive {
         let subscription = client
             .realtime_bars(&contract, BarSize::Sec5, WhatToShow::Trades, false)
             .expect("Real-time bars request failed!"); // TODO add error handeling
-        println!("{:?}", subscription);
+        println!("{:?}", subscription.next());
         Ok(1.2)
     }
 

@@ -2,7 +2,7 @@ use alpha_vantage::stock_time::StockFunction;
 use reqwest::Client;
 use crate::errors::AppErrors;
 use crate::models::{Order, StockData, Stock, StockPricePerformance, News, NewsApiResponse, OrderType, Money};
-use crate::config::config;
+use crate::config::CONFIG;
 use ibapi::contracts::Contract;
 use ibapi::Client as IbClient;
 use ibapi::market_data::realtime::{BarSize, WhatToShow};
@@ -26,7 +26,7 @@ pub struct AiServiceLive;
 impl TradingApiService for TradingApiServiceLive {
     async fn get_stock_data(stock: Stock) -> Result<StockData, AppErrors> {
         let ticker_symbol= stock.get_ticker_symbol();
-        let api_key = alpha_vantage::set_api(config.alpha_vantage_api_key, reqwest::Client::new());
+        let api_key = alpha_vantage::set_api(CONFIG.alpha_vantage_api_key, reqwest::Client::new());
         let time_series = api_key.stock_time(StockFunction::Monthly, &ticker_symbol)
             .json()
             .await;
@@ -50,7 +50,7 @@ impl TradingApiService for TradingApiServiceLive {
         let params = [
             ("function", "NEWS_SENTIMENT"),
             ("tickers", &*ticker_symbol),
-            ("apikey", config.alpha_vantage_api_key),
+            ("apikey", CONFIG.alpha_vantage_api_key),
         ];
 
         let response = client.get(url)

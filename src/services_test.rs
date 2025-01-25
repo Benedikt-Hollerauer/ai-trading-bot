@@ -1,4 +1,4 @@
-mod TradingApiService {
+mod trading_api_service {
     use std::time::SystemTime;
     use crate::errors::AppErrors;
     use crate::services::TradingApiServiceLive;
@@ -74,7 +74,7 @@ mod TradingApiService {
     }
 }
 
-mod AiService {
+mod ai_service {
     use crate::errors::AppErrors;
     use crate::models::{Order, StockData};
     use crate::services::AiServiceLive;

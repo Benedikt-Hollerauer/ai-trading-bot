@@ -1,4 +1,4 @@
-mod MoneyModel {
+mod money_model {
     use crate::errors::AppErrors;
     use crate::models::Money;
     #[test]
@@ -19,6 +19,6 @@ mod MoneyModel {
         assert!(maybe_money_model.is_err())
     }
 }
-mod Stock {
+mod stock {
 
 }

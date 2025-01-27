@@ -2,8 +2,9 @@ use crate::config::CONFIG;
 use crate::errors::AppErrors;
 use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockPricePerformance};
 use alpha_vantage::stock_time::StockFunction;
+use ibapi::accounts::AccountSummaryTags;
 use ibapi::contracts::Contract;
-use ibapi::market_data::realtime::{BarSize, WhatToShow};
+use ibapi::market_data::historical::{ToDuration, BarSize, WhatToShow};
 use ibapi::orders::Action;
 use ibapi::Client as IbClient;
 use reqwest::Client;
@@ -11,7 +12,7 @@ use reqwest::Client;
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
     fn place_order(order: Order) -> Result<(), AppErrors>;
-    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<f64, AppErrors>;
+    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<i64, AppErrors>;
     fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors>;
 }
 
@@ -107,19 +108,34 @@ impl TradingApiService for TradingApiServiceLive {
         todo!()
     }
 
-    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<f64, AppErrors> {
+    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<i64, AppErrors> {
         let connection_url = "127.0.0.1:4002";
         let contract = Contract::stock(&*ticker_symbol);
         let client = IbClient::connect(connection_url, 1).expect("Connection to TWS failed!"); // TODO add error handeling
-        let subscription = client
-            .realtime_bars(&contract, BarSize::Sec5, WhatToShow::Trades, false)
-            .expect("Real-time bars request failed!"); // TODO add error handeling
-        println!("{:?}", subscription.next());
-        Ok(1.2)
+        let current_close = client
+            .historical_data_ending_now(&contract, 1.days(), BarSize::Day, WhatToShow::Trades, true)
+            .map_err(|error| AppErrors::ConvertMoneyToStockQuantityError(error.to_string()))
+            .and_then(|historical_data| Ok(
+                historical_data
+                    .bars
+                    .iter()
+                    .next()
+                    .map(|bar| bar.close)
+            ))?.ok_or(
+                AppErrors::ConvertMoneyToStockQuantityError("There was an error while trying to get the latest closing amount".to_string())
+            )?;
+        Ok(
+            (current_close / amount.amount).floor() as i64
+        )
     }
 
     fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors> {
-        todo!()
+        let connection_url = "127.0.0.1:4002";
+        let contract = Contract::stock(&*ticker_symbol);
+        let client = IbClient::connect(connection_url, 1).expect("Connection to TWS failed!"); // TODO add error handeling
+        let account_summary = client.account_summary("All", AccountSummaryTags::ALL).expect("Account summary failed!");
+        print!("{:?}", account_summary);
+        Ok(1.2)
     }
 }
 

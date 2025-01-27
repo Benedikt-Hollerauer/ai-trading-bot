@@ -4,7 +4,7 @@ use std::string::ToString;
 use std::time::SystemTime;
 
 pub struct Money {
-    amount: f64
+    pub amount: f64
 }
 
 impl Money {

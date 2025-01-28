@@ -112,19 +112,22 @@ impl TradingApiService for TradingApiServiceLive {
         let connection_url = "127.0.0.1:4002";
         let contract = Contract::stock(&*ticker_symbol);
         let current_close = IbClient::connect(connection_url, 1)
-            .map(|client: IbClient| client
-                .historical_data_ending_now(&contract, 1.days(), BarSize::Day, WhatToShow::Trades, true)
-                .map_err(|error| AppErrors::ConvertMoneyToStockQuantityError(error.to_string()))
-                .and_then(|historical_data| Ok(
-                    historical_data
-                        .bars
-                        .iter()
-                        .next()
-                        .map(|bar| bar.close)
-                ))?.ok_or(
-                    AppErrors::ConvertMoneyToStockQuantityError("There was an error while trying to get the latest closing amount".to_string())
-                )?
-            );
+            .and_then(|client: IbClient| client
+                .historical_data(&contract, None, 1.days(), BarSize::Day, WhatToShow::Trades, true)
+                .and_then(|historical_data|
+                    Ok(
+                        historical_data
+                            .bars
+                            .iter()
+                            .next()
+                            .map(|bar| bar.close)
+                    )
+                )
+            ).map_err(|error|
+                AppErrors::ConvertMoneyToStockQuantityError(error.to_string())
+            ).and_then(|close|
+                close.ok_or(AppErrors::ConvertMoneyToStockQuantityError("There was an error while trying to get the latest closing amount".to_string()))
+            )?;
         Ok(
             (current_close / amount.amount).floor() as i64
         )

@@ -2,7 +2,7 @@ use crate::config::CONFIG;
 use crate::errors::AppErrors;
 use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockPricePerformance};
 use alpha_vantage::stock_time::StockFunction;
-use ibapi::accounts::AccountSummaryTags;
+use ibapi::accounts::{AccountSummaryTags, Position, PositionUpdate};
 use ibapi::contracts::Contract;
 use ibapi::market_data::historical::{ToDuration, BarSize, WhatToShow};
 use ibapi::orders::Action;
@@ -109,9 +109,8 @@ impl TradingApiService for TradingApiServiceLive {
     }
 
     fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<i64, AppErrors> {
-        let connection_url = "127.0.0.1:4002";
         let contract = Contract::stock(&*ticker_symbol);
-        let current_close = IbClient::connect(connection_url, 1)
+        let current_close = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
             .and_then(|client: IbClient| client
                 .historical_data(&contract, None, 1.days(), BarSize::Day, WhatToShow::Trades, true)
                 .and_then(|historical_data|
@@ -134,11 +133,18 @@ impl TradingApiService for TradingApiServiceLive {
     }
 
     fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors> {
-        let connection_url = "127.0.0.1:4002";
-        let contract = Contract::stock(&*ticker_symbol);
-        let client = IbClient::connect(connection_url, 1).expect("Connection to TWS failed!"); // TODO add error handeling
-        let account_summary = client.account_summary("All", AccountSummaryTags::ALL).expect("Account summary failed!");
-        print!("{:?}", account_summary);
+        let contract = Contract::stock(&ticker_symbol);
+        let client = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
+            .map_err(|error| AppErrors::GetQuantityToSellEverythingError(error.to_string()))?;
+        let positions = client.positions()
+            .map_err(|error| AppErrors::GetQuantityToSellEverythingError(error.to_string()))?;
+        //for position in positions {
+        //    println!("position: {:?}", position);
+        //    //if position == ticker_symbol {
+        //    //    return Ok(position.position);
+        //    //}
+        //}
+        println!("{:?}", positions);
         Ok(1.2)
     }
 }

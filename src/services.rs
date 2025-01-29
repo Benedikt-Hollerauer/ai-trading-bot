@@ -1,3 +1,4 @@
+use std::future;
 use crate::config::CONFIG;
 use crate::errors::AppErrors;
 use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockPricePerformance};
@@ -133,19 +134,32 @@ impl TradingApiService for TradingApiServiceLive {
     }
 
     fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors> {
-        let contract = Contract::stock(&ticker_symbol);
         let client = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
             .map_err(|error| AppErrors::GetQuantityToSellEverythingError(error.to_string()))?;
         let positions = client.positions()
             .map_err(|error| AppErrors::GetQuantityToSellEverythingError(error.to_string()))?;
-        //for position in positions {
-        //    println!("position: {:?}", position);
-        //    //if position == ticker_symbol {
-        //    //    return Ok(position.position);
-        //    //}
-        //}
-        println!("{:?}", positions);
-        Ok(1.2)
+
+        let position = positions.iter()
+            .take_while(|position_update|
+                !matches!(position_update, PositionUpdate::PositionEnd)
+            ).find(|position_update|
+                match position_update {
+                    PositionUpdate::Position(position) => position.contract.symbol == ticker_symbol,
+                    _ => false
+                }
+            ).and_then(|position_update|
+                match position_update {
+                    PositionUpdate::Position(position) => Some(position),
+                    _ => None
+                }
+            ).ok_or(
+                AppErrors::GetQuantityToSellEverythingError(
+                    "There was an error while trying to get the latest closing amount. Possibly there are no positions available or not the position with this ticker_symbol: ".to_string() + &*ticker_symbol
+                )
+            )?;
+        Ok(
+            position.position.abs()
+        )
     }
 }
 

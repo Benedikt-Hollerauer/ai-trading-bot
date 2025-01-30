@@ -4,5 +4,6 @@ pub enum AppErrors {
     ModelCreationError(String),
     GetStockDataError(String),
     ConvertMoneyToStockQuantityError(String),
-    GetQuantityToSellEverythingError(String)
+    GetQuantityToSellEverythingError(String),
+    PlaceOrderError(String)
 }

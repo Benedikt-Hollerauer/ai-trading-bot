@@ -13,7 +13,7 @@ use reqwest::Client;
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
     fn place_order(order: Order) -> Result<(), AppErrors>;
-    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<i64, AppErrors>;
+    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<f64, AppErrors>;
     fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors>;
 }
 
@@ -79,15 +79,35 @@ impl TradingApiService for TradingApiServiceLive {
     }
 
     fn place_order(order: Order) -> Result<(), AppErrors> {
-        let contract = Contract::stock(&*order.stock.get_ticker_symbol());
+        let ticker = order.stock.get_ticker_symbol();
+        let contract = Contract::stock(&*ticker);
+
+        let mut client = IbClient::connect(
+            CONFIG.interactive_brokers_connection_url_with_port,
+            1
+        ).map_err(|e| AppErrors::PlaceOrderError(e.to_string()))?;
+
+        let order_id = client.next_order_id(); // Now using mutable borrow
+
         let action = match order.order_type {
-            OrderType::Buy(amount) => Action::Buy,
-            OrderType::Sell => Action::Sell
+            OrderType::Buy(amount) => (Action::Buy, Some(amount)),
+            OrderType::Sell => (Action::Sell, None)
         };
-        todo!()
+
+        let quantity = match action {
+            (Action::Buy, Some(amount)) => Self::convert_money_amount_to_stock_quantity(amount, ticker),
+            (Action::Sell, _) => Self::get_quantity_to_sell_everything(ticker),
+            _ => Err(AppErrors::PlaceOrderError("Error while getting the quantity.".to_string()))
+        }?;
+
+        let order = order_builder::market_order(action.0, quantity);
+
+        client.place_order(order_id, &contract, &order)
+            .map(|_| ())
+            .map_err(|e| AppErrors::PlaceOrderError(e.to_string()))
     }
 
-    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<i64, AppErrors> {
+    fn convert_money_amount_to_stock_quantity(amount: Money, ticker_symbol: String) -> Result<f64, AppErrors> {
         let contract = Contract::stock(&*ticker_symbol);
         let current_close = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
             .and_then(|client: IbClient| client
@@ -102,12 +122,12 @@ impl TradingApiService for TradingApiServiceLive {
                     )
                 )
             ).map_err(|error|
-                AppErrors::ConvertMoneyToStockQuantityError(error.to_string())
+                AppErrors::ConvertMoneyToStockQuantityError(error.to_string() + " for ticker: "+ &ticker_symbol)
             ).and_then(|close|
                 close.ok_or(AppErrors::ConvertMoneyToStockQuantityError("There was an error while trying to get the latest closing amount".to_string()))
             )?;
         Ok(
-            (current_close / amount.amount).floor() as i64
+            (current_close / amount.amount).floor()
         )
     }
 

@@ -23,7 +23,7 @@ mod trading_api_service {
         let order_success_mock: Order = Order {
             order_id: "1".to_string(),
             stock: Stock::new("GOOG".to_string()),
-            order_type: OrderType::Sell,
+            order_type: OrderType::Buy(Money::new(1.1).unwrap()),
             timestamp: SystemTime::now()
         };
         let maybe_successfully_placed_order: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_success_mock);
@@ -35,25 +35,26 @@ mod trading_api_service {
     async fn test_place_order_method_failure() {
         let order_failure_mock: Order = Order {
             order_id:  "1".to_string(),
-            stock: Stock::new("GOOG".to_string()),
+            stock: Stock::new("not_a_stock".to_string()),
             order_type: OrderType::Buy(Money::new(1.1).unwrap()),
             timestamp: SystemTime::now()
         };
         let maybe_successfully_failed_order: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_failure_mock);
+        println!("{:?}", maybe_successfully_failed_order);
         assert!(maybe_successfully_failed_order.is_err())
     }
 
     #[test]
     async fn test_convert_money_amount_to_stock_quantity_method_success() {
         let money_mock = Money::new(1.1).unwrap();
-        let maybe_stock_data: Result<i64, AppErrors> = TradingApiServiceLive::convert_money_amount_to_stock_quantity(money_mock, "GOOG".to_string());
+        let maybe_stock_data: Result<f64, AppErrors> = TradingApiServiceLive::convert_money_amount_to_stock_quantity(money_mock, "GOOG".to_string());
         assert!(maybe_stock_data.is_ok())
     }
 
     #[test]
     async fn test_convert_money_amount_to_stock_quantity_method_failure() {
         let money_mock = Money::new(1.1).unwrap();
-        let maybe_stock_data: Result<i64, AppErrors> = TradingApiServiceLive::convert_money_amount_to_stock_quantity(money_mock, "not_a_ticker_symbol".to_string());
+        let maybe_stock_data: Result<f64, AppErrors> = TradingApiServiceLive::convert_money_amount_to_stock_quantity(money_mock, "not_a_ticker_symbol".to_string());
         assert!(maybe_stock_data.is_err())
     }
 

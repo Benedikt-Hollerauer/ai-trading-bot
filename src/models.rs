@@ -42,13 +42,12 @@ impl Stock {
 pub struct Order {
     pub order_id: String,
     pub stock: Stock,
-    pub amount: Money,
     pub order_type: OrderType,
     pub timestamp: SystemTime
 }
 
 pub enum OrderType {
-    Buy,
+    Buy(Money),
     Sell
 }
 

@@ -23,12 +23,12 @@ mod trading_api_service {
         let order_success_mock: Order = Order {
             order_id: "1".to_string(),
             stock: Stock::new("GOOG".to_string()),
-            amount: Money::new(1.1).unwrap(),
-            order_type: OrderType::Buy,
+            order_type: OrderType::Sell,
             timestamp: SystemTime::now()
         };
-        let maybe_stock_data: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_success_mock);
-        assert!(maybe_stock_data.is_ok())
+        let maybe_successfully_placed_order: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_success_mock);
+        println!("{:?}", maybe_successfully_placed_order);
+        assert!(maybe_successfully_placed_order.is_ok())
     }
 
     #[test]
@@ -36,12 +36,11 @@ mod trading_api_service {
         let order_failure_mock: Order = Order {
             order_id:  "1".to_string(),
             stock: Stock::new("GOOG".to_string()),
-            amount: Money::new(1.1).unwrap(),
-            order_type: OrderType::Buy,
+            order_type: OrderType::Buy(Money::new(1.1).unwrap()),
             timestamp: SystemTime::now()
         };
-        let maybe_stock_data: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_failure_mock);
-        assert!(maybe_stock_data.is_err())
+        let maybe_successfully_failed_order: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_failure_mock);
+        assert!(maybe_successfully_failed_order.is_err())
     }
 
     #[test]

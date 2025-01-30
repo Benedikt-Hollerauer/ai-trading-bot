@@ -6,7 +6,7 @@ use alpha_vantage::stock_time::StockFunction;
 use ibapi::accounts::{AccountSummaryTags, Position, PositionUpdate};
 use ibapi::contracts::Contract;
 use ibapi::market_data::historical::{ToDuration, BarSize, WhatToShow};
-use ibapi::orders::Action;
+use ibapi::orders::{order_builder, Action, PlaceOrder};
 use ibapi::Client as IbClient;
 use reqwest::Client;
 
@@ -79,33 +79,11 @@ impl TradingApiService for TradingApiServiceLive {
     }
 
     fn place_order(order: Order) -> Result<(), AppErrors> {
-        let connection_url = "";
         let contract = Contract::stock(&*order.stock.get_ticker_symbol());
         let action = match order.order_type {
-            OrderType::Buy => Action::Buy,
+            OrderType::Buy(amount) => Action::Buy,
             OrderType::Sell => Action::Sell
         };
-        //let order = IbClient::connect(connection_url, 100)
-        //    .map(|client: IbClient|
-        //         (order_builder::market_order(
-        //             action,
-        //            1.0
-        //         ), client)
-        //    ).and_then(|(order, client)|
-        //        client.place_order(
-        //            client.next_order_id(),
-        //            &contract,
-        //            &order
-        //        )
-        //    ).map(|subscription|
-        //        for event in subscription {
-        //            if let PlaceOrder::ExecutionData(data) = event {
-        //                println!("{:?}", data);
-        //            } else {
-        //                println!("{:?}", event);
-        //            }
-        //        }
-        //    );
         todo!()
     }
 

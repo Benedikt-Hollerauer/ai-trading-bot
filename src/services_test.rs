@@ -9,8 +9,7 @@ mod trading_api_service {
     #[test]
     async fn test_get_stock_data_method_success() {
         let maybe_stock_data: Result<StockData, AppErrors> = TradingApiServiceLive::get_stock_data(Stock::new("GOOG".to_string())).await;
-        println!("{:?}", maybe_stock_data);
-        //assert!(maybe_stock_data.is_ok())
+        assert!(maybe_stock_data.is_ok())
     }
 
     #[test]
@@ -49,8 +48,7 @@ mod trading_api_service {
     async fn test_convert_money_amount_to_stock_quantity_method_success() {
         let money_mock = Money::new(1.1).unwrap();
         let maybe_stock_data: Result<i64, AppErrors> = TradingApiServiceLive::convert_money_amount_to_stock_quantity(money_mock, "GOOG".to_string());
-        println!("{:?}", maybe_stock_data);
-        //assert!(maybe_stock_data.is_ok())
+        assert!(maybe_stock_data.is_ok())
     }
 
     #[test]
@@ -64,7 +62,7 @@ mod trading_api_service {
     async fn test_get_quantity_to_sell_everything_method_success() {
         let maybe_stock_data: Result<f64, AppErrors> = TradingApiServiceLive::get_quantity_to_sell_everything("GOOG".to_string());
         println!("{:?}", maybe_stock_data);
-        //assert!(maybe_stock_data.is_ok())
+        assert!(maybe_stock_data.is_ok())
     }
 
     #[test]

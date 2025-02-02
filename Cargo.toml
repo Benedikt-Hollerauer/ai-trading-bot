@@ -10,3 +10,4 @@ tokio = { version = "1.43.0", features = ["full"] }
 serde_json = "1.0.137"
 serde = { version = "1.0.217", features = ["derive"] }
 ibapi = "1.0.12"
+openai-api-rs = "5.2.5"

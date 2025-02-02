@@ -163,6 +163,6 @@ impl TradingApiService for TradingApiServiceLive {
 
 impl AiService for AiServiceLive {
     fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors> {
-        todo!()
+
     }
 }

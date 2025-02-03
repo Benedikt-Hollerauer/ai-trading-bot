@@ -77,27 +77,27 @@ mod ai_service {
     use crate::models::{Order, StockData};
     use crate::services::AiService;
     use crate::services::AiServiceLive;
-
+    use tokio::test;
 
     #[test]
-    fn test_get_order_advice_method_success() {
+    async fn test_get_order_advice_method_success() {
         let test_stock_data: StockData = StockData {
             ticker_symbol: "GOOG".to_string(),
             stock_price_performance: todo!(),
             news: todo!()
         };
-        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(test_stock_data);
+        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(test_stock_data).await;
         assert!(maybe_order_advice.is_ok())
     }
 
     #[test]
-    fn test_get_order_advice_method_failure() {
+    async fn test_get_order_advice_method_failure() {
         let test_stock_data: StockData = StockData {
             ticker_symbol: "GOOG".to_string(),
             stock_price_performance: todo!(),
             news: todo!()
         };
-        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(test_stock_data);
+        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(test_stock_data).await;
         assert!(maybe_order_advice.is_err())
     }
 }

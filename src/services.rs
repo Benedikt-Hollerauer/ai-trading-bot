@@ -22,7 +22,7 @@ pub trait TradingApiService {
 pub struct TradingApiServiceLive;
 
 pub trait AiService {
-    fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors>;
+    async fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors>;
 }
 
 pub struct AiServiceLive;
@@ -164,16 +164,17 @@ impl TradingApiService for TradingApiServiceLive {
 }
 
 impl AiService for AiServiceLive {
-    fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors> {
+    async fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors> {
         let ollama = Ollama::default();
-        let model = "deepseek:latest".to_string();
-        let prompt = "".to_string();
+        let model = "deepseek-r1:1.5b".to_string();
+        let prompt = "Hey deepseek. How are you? :)".to_string();
 
-        let order_advice_result = ollama.generate(GenerationRequest::new(model, prompt));
+        let order_advice_result = ollama.generate(GenerationRequest::new(model, prompt)).await;
 
         if let Ok(order_advice_result) = order_advice_result {
             println!("{:?}", order_advice_result);
         }
+
         Err(AppErrors::GetOrderAdviceError("".to_string()))
     }
 }

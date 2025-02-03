@@ -8,7 +8,8 @@ use ibapi::contracts::Contract;
 use ibapi::market_data::historical::{ToDuration, BarSize, WhatToShow};
 use ibapi::orders::{order_builder, Action, PlaceOrder};
 use ibapi::Client as IbClient;
-use openai_api_rs::v1::api::OpenAIClient;
+use ollama_rs::generation::completion::request::GenerationRequest;
+use ollama_rs::Ollama;
 use reqwest::Client;
 
 pub trait TradingApiService {
@@ -164,9 +165,15 @@ impl TradingApiService for TradingApiServiceLive {
 
 impl AiService for AiServiceLive {
     fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors> {
-        let client = OpenAIClient::builder()
-            .with_api_key(CONFIG.open_ai_api_key)
-            .build()
-            .map_err(|error| AppErrors::GetOrderAdviceError(error.to_string()))?;
+        let ollama = Ollama::default();
+        let model = "deepseek:latest".to_string();
+        let prompt = "".to_string();
+
+        let order_advice_result = ollama.generate(GenerationRequest::new(model, prompt));
+
+        if let Ok(order_advice_result) = order_advice_result {
+            println!("{:?}", order_advice_result);
+        }
+        Err(AppErrors::GetOrderAdviceError("".to_string()))
     }
 }

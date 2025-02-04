@@ -3,6 +3,7 @@ use serde::Deserialize;
 use std::string::ToString;
 use std::time::SystemTime;
 
+#[derive(Debug)]
 pub struct Money {
     pub amount: f64
 }
@@ -25,6 +26,7 @@ impl Money {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Stock {
     ticker_symbol: String
 }
@@ -39,6 +41,7 @@ impl Stock {
     }
 }
 
+#[derive(Debug)]
 pub struct Order {
     pub order_id: String,
     pub stock: Stock,
@@ -46,6 +49,7 @@ pub struct Order {
     pub timestamp: SystemTime
 }
 
+#[derive(Debug)]
 pub enum OrderType {
     Buy(Money),
     Sell
@@ -73,7 +77,7 @@ pub struct NewsApiResponse {
 
 #[derive(Debug)]
 pub struct StockData {
-    pub ticker_symbol: String,
+    pub stock: Stock,
     pub stock_price_performance: Vec<StockPricePerformance>,
     pub news: Vec<News>
 }

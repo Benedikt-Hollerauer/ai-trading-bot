@@ -1,4 +1,5 @@
 use std::future;
+use std::time::SystemTime;
 use crate::config::CONFIG;
 use crate::errors::AppErrors;
 use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockPricePerformance};
@@ -9,6 +10,7 @@ use ibapi::market_data::historical::{ToDuration, BarSize, WhatToShow};
 use ibapi::orders::{order_builder, Action, PlaceOrder};
 use ibapi::Client as IbClient;
 use ollama_rs::generation::completion::request::GenerationRequest;
+use ollama_rs::generation::options::GenerationOptions;
 use ollama_rs::Ollama;
 use reqwest::Client;
 
@@ -22,7 +24,7 @@ pub trait TradingApiService {
 pub struct TradingApiServiceLive;
 
 pub trait AiService {
-    async fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors>;
+    async fn get_order_advice(money_amount_to_buy: Money, stock_data: StockData) -> Result<Order, AppErrors>;
 }
 
 pub struct AiServiceLive;
@@ -73,7 +75,7 @@ impl TradingApiService for TradingApiServiceLive {
 
         Ok(
             StockData {
-                ticker_symbol: ticker_symbol.to_string(),
+                stock: Stock::new(ticker_symbol.to_string()),
                 stock_price_performance: stock_price_performance?,
                 news: news?
             }
@@ -164,17 +166,46 @@ impl TradingApiService for TradingApiServiceLive {
 }
 
 impl AiService for AiServiceLive {
-    async fn get_order_advice(stock_data: StockData) -> Result<Order, AppErrors> {
+    async fn get_order_advice(
+        money_amount_to_buy: Money,
+        stock_data: StockData
+    ) -> Result<Order, AppErrors> {
         let ollama = Ollama::default();
         let model = "deepseek-r1:1.5b".to_string();
-        let prompt = "Hey deepseek. How are you? :)".to_string();
+        let options = GenerationOptions::default()
+            .temperature(0.0);
+        let ticker_symbol = stock_data.stock
+            .clone()
+            .get_ticker_symbol();
+        let prompt = format!(
+            "Portfolio analysis:\nTicker: {}\nNews: {:?}\nPrice: {:?}\nShould I SELL or BUY? Reply with only one word: SELL or BUY. (If you are not sure, do not reply with one of those words)",
+            ticker_symbol,
+            stock_data.news,
+            stock_data.stock_price_performance
+        );
 
-        let order_advice_result = ollama.generate(GenerationRequest::new(model, prompt)).await;
+        let order_advice_result = ollama
+            .generate(GenerationRequest::new(model, prompt).options(options))
+            .await;
 
-        if let Ok(order_advice_result) = order_advice_result {
-            println!("{:?}", order_advice_result);
-        }
-
-        Err(AppErrors::GetOrderAdviceError("".to_string()))
+        let order_type = order_advice_result
+            .map_err(|error| AppErrors::GetOrderAdviceError(error.to_string()))
+            .and_then(|ai_result|
+                if ai_result.response.contains("SELL") {
+                    Ok(OrderType::Sell)
+                } else if ai_result.response.contains("BUY") {
+                    Ok(OrderType::Buy(money_amount_to_buy))
+                } else {
+                    Err(AppErrors::GetOrderAdviceError("The Ai didn't respond with a clear order advice".to_string()))
+                }
+            )?;
+        Ok(
+            Order {
+                order_id: "1".to_string(), // TODO fix id
+                stock: stock_data.stock,
+                order_type: order_type,
+                timestamp: SystemTime::now()
+            }
+        )
     }
 }

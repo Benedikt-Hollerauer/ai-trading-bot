@@ -75,7 +75,7 @@ mod trading_api_service {
 
 mod ai_service {
     use crate::errors::AppErrors;
-    use crate::models::{Money, News, Order, Stock, StockData, StockPricePerformance};
+    use crate::models::{News, Order, Stock, StockData, StockPricePerformance};
     use crate::services::AiService;
     use crate::services::AiServiceLive;
     use tokio::test;

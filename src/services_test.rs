@@ -22,8 +22,9 @@ mod trading_api_service {
     #[test]
     async fn test_place_order_method_success() {
         let order_success_mock: Order = Order {
+            stock_quantity: 1.1,
             stock: Stock::new("GOOG".to_string()),
-            order_type: OrderType::Buy(Money::new(1.1).unwrap()),
+            order_type: OrderType::Buy,
             timestamp: SystemTime::now()
         };
         let maybe_successfully_placed_order: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_success_mock);
@@ -34,8 +35,9 @@ mod trading_api_service {
     #[test]
     async fn test_place_order_method_failure() {
         let order_failure_mock: Order = Order {
+            stock_quantity: 1.1,
             stock: Stock::new("not_a_stock".to_string()),
-            order_type: OrderType::Buy(Money::new(1.1).unwrap()),
+            order_type: OrderType::Buy,
             timestamp: SystemTime::now()
         };
         let maybe_successfully_failed_order: Result<(), AppErrors> = TradingApiServiceLive::place_order(order_failure_mock);
@@ -89,7 +91,7 @@ mod ai_service {
                 time_published: "20250204T025520".to_string()
             }]
         };
-        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(Money::new(1.1).unwrap(), test_stock_data).await;
+        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(1.1, test_stock_data).await;
         assert!(maybe_order_advice.is_ok())
     }
 
@@ -104,7 +106,7 @@ mod ai_service {
                 time_published: "".to_string()
             }]
         };
-        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(Money::new(1.1).unwrap(), test_stock_data).await;
+        let maybe_order_advice: Result<Order, AppErrors> = AiServiceLive::get_order_advice(1.1, test_stock_data).await;
         println!("{:?}", maybe_order_advice);
         assert!(maybe_order_advice.is_err())
     }

@@ -24,7 +24,7 @@ pub trait TradingApiService {
 pub struct TradingApiServiceLive;
 
 pub trait AiService {
-    async fn get_order_advice(money_amount_to_buy: Money, stock_data: StockData) -> Result<Order, AppErrors>;
+    async fn get_order_advice(stock_quantity: f64, stock_data: StockData) -> Result<Order, AppErrors>;
 }
 
 pub struct AiServiceLive;
@@ -94,17 +94,11 @@ impl TradingApiService for TradingApiServiceLive {
         let order_id = client.next_order_id(); // Now using mutable borrow
 
         let action = match order.order_type {
-            OrderType::Buy(amount) => (Action::Buy, Some(amount)),
-            OrderType::Sell => (Action::Sell, None)
+            OrderType::Buy => Action::Buy,
+            OrderType::Sell => Action::Sell,
         };
 
-        let quantity = match action {
-            (Action::Buy, Some(amount)) => Self::convert_money_amount_to_stock_quantity(amount, ticker),
-            (Action::Sell, _) => Self::get_quantity_to_sell_everything(ticker),
-            _ => Err(AppErrors::PlaceOrderError("Error while getting the quantity.".to_string()))
-        }?;
-
-        let order = order_builder::market_order(action.0, quantity);
+        let order = order_builder::market_order(action, order.stock_quantity);
 
         client.place_order(order_id, &contract, &order)
             .map(|_| ())
@@ -167,7 +161,7 @@ impl TradingApiService for TradingApiServiceLive {
 
 impl AiService for AiServiceLive {
     async fn get_order_advice(
-        money_amount_to_buy: Money,
+        stock_quantity: f64,
         stock_data: StockData
     ) -> Result<Order, AppErrors> {
         let ollama = Ollama::default();
@@ -194,13 +188,14 @@ impl AiService for AiServiceLive {
                 if ai_result.response.contains("SELL") {
                     Ok(OrderType::Sell)
                 } else if ai_result.response.contains("BUY") {
-                    Ok(OrderType::Buy(money_amount_to_buy))
+                    Ok(OrderType::Buy)
                 } else {
                     Err(AppErrors::GetOrderAdviceError("The Ai didn't respond with a clear order advice".to_string()))
                 }
             )?;
         Ok(
             Order {
+                stock_quantity: stock_quantity,
                 stock: stock_data.stock,
                 order_type: order_type,
                 timestamp: SystemTime::now()

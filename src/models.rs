@@ -43,6 +43,7 @@ impl Stock {
 
 #[derive(Debug)]
 pub struct Order {
+    pub stock_quantity: f64,
     pub stock: Stock,
     pub order_type: OrderType,
     pub timestamp: SystemTime
@@ -50,7 +51,7 @@ pub struct Order {
 
 #[derive(Debug)]
 pub enum OrderType {
-    Buy(Money),
+    Buy,
     Sell
 }
 

@@ -1,4 +1,3 @@
-
 #[derive(Debug)]
 pub enum AppErrors {
     ModelCreationError(String),
@@ -6,5 +5,5 @@ pub enum AppErrors {
     ConvertMoneyToStockQuantityError(String),
     GetQuantityToSellEverythingError(String),
     PlaceOrderError(String),
-    GetOrderAdviceError(String)
+    GetOrderAdviceError(String),
 }

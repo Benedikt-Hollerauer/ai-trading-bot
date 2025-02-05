@@ -40,14 +40,12 @@ impl TradingApiService for TradingApiServiceLive {
     async fn get_stock_data(stock: Stock) -> Result<StockData, AppErrors> {
         let ticker_symbol = stock.get_ticker_symbol();
         let api_key = alpha_vantage::set_api(CONFIG.alpha_vantage_api_key, reqwest::Client::new());
-        let time_series = api_key
+        let stock_price_performance: Result<Vec<StockPricePerformance>, AppErrors> = api_key
             .stock_time(StockFunction::Monthly, &ticker_symbol)
             .json()
-            .await;
-
-        let stock_price_performance: Result<Vec<StockPricePerformance>, AppErrors> =
-            match time_series {
-                Ok(time_series) => Ok(time_series
+            .await
+            .map(|time_series|
+                time_series
                     .data()
                     .iter()
                     .map(|stock_price| StockPricePerformance {
@@ -56,9 +54,10 @@ impl TradingApiService for TradingApiServiceLive {
                         low: stock_price.low().to_string(),
                         open: stock_price.open().to_string(),
                     })
-                    .collect()),
-                Err(error) => Err(AppErrors::GetStockDataError(error.to_string())),
-            };
+                    .collect()
+            ).map_err(|error|
+                AppErrors::GetStockDataError(error.to_string())
+            );
 
         let client = Client::new();
         let url = "https://www.alphavantage.co/query";

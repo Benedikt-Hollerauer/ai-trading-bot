@@ -22,7 +22,6 @@ mod trading_api_service {
     #[test]
     async fn test_place_order_method_success() {
         let order_success_mock: Order = Order {
-            order_id: "1".to_string(),
             stock: Stock::new("GOOG".to_string()),
             order_type: OrderType::Buy(Money::new(1.1).unwrap()),
             timestamp: SystemTime::now()
@@ -35,7 +34,6 @@ mod trading_api_service {
     #[test]
     async fn test_place_order_method_failure() {
         let order_failure_mock: Order = Order {
-            order_id:  "1".to_string(),
             stock: Stock::new("not_a_stock".to_string()),
             order_type: OrderType::Buy(Money::new(1.1).unwrap()),
             timestamp: SystemTime::now()

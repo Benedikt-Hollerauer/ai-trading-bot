@@ -201,7 +201,6 @@ impl AiService for AiServiceLive {
             )?;
         Ok(
             Order {
-                order_id: "1".to_string(), // TODO fix id
                 stock: stock_data.stock,
                 order_type: order_type,
                 timestamp: SystemTime::now()

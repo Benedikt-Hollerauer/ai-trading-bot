@@ -43,7 +43,6 @@ impl Stock {
 
 #[derive(Debug)]
 pub struct Order {
-    pub order_id: String,
     pub stock: Stock,
     pub order_type: OrderType,
     pub timestamp: SystemTime

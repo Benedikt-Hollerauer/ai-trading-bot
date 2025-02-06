@@ -1,6 +1,6 @@
-use std::time::SystemTime;
 use crate::models::{Money, Order, OrderType, Stock};
 use crate::services::{AiService, AiServiceLive, TradingApiService, TradingApiServiceLive};
+use std::time::SystemTime;
 
 mod config;
 mod errors;
@@ -19,7 +19,7 @@ async fn main() {
         let stock_quantity = match order_type {
             OrderType::Buy => TradingApiServiceLive::convert_money_amount_to_stock_quantity(
                 amount_to_invest?,
-                stock.clone().get_ticker_symbol()
+                stock.clone().get_ticker_symbol(),
             ),
             OrderType::Sell => TradingApiServiceLive::get_quantity_to_sell_everything(
                 stock.clone().get_ticker_symbol()
@@ -34,7 +34,7 @@ async fn main() {
         TradingApiServiceLive::place_order(order)
     }.await;
 
-    match order_process_result{
+    match order_process_result {
         Ok(order) => println!("Process finished successfully. Order: {:?}", order),
         Err(app_error) => println!("Process failed with error: {:?}", app_error),
     }

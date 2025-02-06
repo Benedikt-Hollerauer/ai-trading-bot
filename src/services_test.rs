@@ -91,7 +91,7 @@ mod trading_api_service {
 
 mod ai_service {
     use crate::errors::AppErrors;
-    use crate::models::{News, Order, OrderType, Stock, StockData, StockPricePerformance};
+    use crate::models::{News, OrderType, Stock, StockData, StockPricePerformance};
     use crate::services::AiService;
     use crate::services::AiServiceLive;
     use tokio::test;
@@ -105,7 +105,7 @@ mod ai_service {
                 title: "Google's Fight Against Epic Games' Antitrust Win Hits Roadblock -Judges Tell Search Giant Apple Case Doesn't Apply - Alphabet  ( NASDAQ:GOOG ) , Apple  ( NASDAQ:AAPL ) ".to_string(),
                 summary: "On Monday, a federal appeals court in San Francisco showed skepticism toward Alphabet Inc.'s GOOG GOOGL efforts to overturn a jury verdict in favor of Fortine-maker Epic Games. What Happened: The jury had sided with Epic in 2023, accusing Google of imposing restrictive policies on its Google Play ...".to_string(),
                 time_published: "20250204T025520".to_string()
-            }]
+            }],
         };
         let maybe_order_advice: Result<OrderType, AppErrors> =
             AiServiceLive::get_order_advice(test_stock_data).await;

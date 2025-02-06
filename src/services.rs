@@ -13,7 +13,6 @@ use ollama_rs::generation::completion::request::GenerationRequest;
 use ollama_rs::generation::options::GenerationOptions;
 use ollama_rs::Ollama;
 use reqwest::Client;
-use std::time::SystemTime;
 
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
@@ -55,8 +54,8 @@ impl TradingApiService for TradingApiServiceLive {
                     })
                     .collect()
             ).map_err(|error|
-                AppErrors::GetStockDataError(error.to_string())
-            );
+            AppErrors::GetStockDataError(error.to_string())
+        );
 
         let client = Client::new();
         let url = "https://www.alphavantage.co/query";
@@ -151,20 +150,20 @@ impl TradingApiService for TradingApiServiceLive {
             .take_while(|position_update|
                 !matches!(position_update, PositionUpdate::PositionEnd)
             ).find(|position_update|
-                match position_update {
-                    PositionUpdate::Position(position) => position.contract.symbol == ticker_symbol,
-                    _ => false
-                }
-            ).and_then(|position_update|
-                match position_update {
-                    PositionUpdate::Position(position) => Some(position),
-                    _ => None
-                }
-            ).ok_or(
-                AppErrors::GetQuantityToSellEverythingError(
-                    "There was an error while trying to get the latest closing amount. Possibly there are no positions available or not the position with this ticker_symbol: ".to_string() + &*ticker_symbol
-                )
-            )?;
+            match position_update {
+                PositionUpdate::Position(position) => position.contract.symbol == ticker_symbol,
+                _ => false
+            }
+        ).and_then(|position_update|
+            match position_update {
+                PositionUpdate::Position(position) => Some(position),
+                _ => None
+            }
+        ).ok_or(
+            AppErrors::GetQuantityToSellEverythingError(
+                "There was an error while trying to get the latest closing amount. Possibly there are no positions available or not the position with this ticker_symbol: ".to_string() + &*ticker_symbol
+            )
+        )?;
         Ok(position.position.abs())
     }
 }

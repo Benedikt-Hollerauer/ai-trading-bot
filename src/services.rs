@@ -13,11 +13,10 @@ use ollama_rs::generation::completion::request::GenerationRequest;
 use ollama_rs::generation::options::GenerationOptions;
 use ollama_rs::Ollama;
 use reqwest::Client;
-use std::time::SystemTime;
 
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
-    fn place_order(order: Order) -> Result<(), AppErrors>;
+    fn place_order(order: Order) -> Result<String, AppErrors>;
     fn convert_money_amount_to_stock_quantity(
         amount: Money,
         ticker_symbol: String,
@@ -29,9 +28,8 @@ pub struct TradingApiServiceLive;
 
 pub trait AiService {
     async fn get_order_advice(
-        stock_quantity: f64,
         stock_data: StockData,
-    ) -> Result<Order, AppErrors>;
+    ) -> Result<OrderType, AppErrors>;
 }
 
 pub struct AiServiceLive;
@@ -56,8 +54,8 @@ impl TradingApiService for TradingApiServiceLive {
                     })
                     .collect()
             ).map_err(|error|
-                AppErrors::GetStockDataError(error.to_string())
-            );
+            AppErrors::GetStockDataError(error.to_string())
+        );
 
         let client = Client::new();
         let url = "https://www.alphavantage.co/query";
@@ -84,7 +82,7 @@ impl TradingApiService for TradingApiServiceLive {
         })
     }
 
-    fn place_order(order: Order) -> Result<(), AppErrors> {
+    fn place_order(order: Order) -> Result<String, AppErrors> {
         let ticker = order.stock.get_ticker_symbol();
         let contract = Contract::stock(&*ticker);
 
@@ -102,7 +100,7 @@ impl TradingApiService for TradingApiServiceLive {
 
         client
             .place_order(order_id, &contract, &order)
-            .map(|_| ())
+            .map(|_| format!("{:?}", order))
             .map_err(|e| AppErrors::PlaceOrderError(e.to_string()))
     }
 
@@ -152,29 +150,28 @@ impl TradingApiService for TradingApiServiceLive {
             .take_while(|position_update|
                 !matches!(position_update, PositionUpdate::PositionEnd)
             ).find(|position_update|
-                match position_update {
-                    PositionUpdate::Position(position) => position.contract.symbol == ticker_symbol,
-                    _ => false
-                }
-            ).and_then(|position_update|
-                match position_update {
-                    PositionUpdate::Position(position) => Some(position),
-                    _ => None
-                }
-            ).ok_or(
-                AppErrors::GetQuantityToSellEverythingError(
-                    "There was an error while trying to get the latest closing amount. Possibly there are no positions available or not the position with this ticker_symbol: ".to_string() + &*ticker_symbol
-                )
-            )?;
+            match position_update {
+                PositionUpdate::Position(position) => position.contract.symbol == ticker_symbol,
+                _ => false
+            }
+        ).and_then(|position_update|
+            match position_update {
+                PositionUpdate::Position(position) => Some(position),
+                _ => None
+            }
+        ).ok_or(
+            AppErrors::GetQuantityToSellEverythingError(
+                "There was an error while trying to get the latest closing amount. Possibly there are no positions available or not the position with this ticker_symbol: ".to_string() + &*ticker_symbol
+            )
+        )?;
         Ok(position.position.abs())
     }
 }
 
 impl AiService for AiServiceLive {
     async fn get_order_advice(
-        stock_quantity: f64,
         stock_data: StockData,
-    ) -> Result<Order, AppErrors> {
+    ) -> Result<OrderType, AppErrors> {
         let ollama = Ollama::default();
         let model = "deepseek-r1:1.5b".to_string();
         let options = GenerationOptions::default().temperature(0.0);
@@ -190,7 +187,7 @@ impl AiService for AiServiceLive {
             .generate(GenerationRequest::new(model, prompt).options(options))
             .await;
 
-        let order_type = order_advice_result
+        order_advice_result
             .map_err(|error| AppErrors::GetOrderAdviceError(error.to_string()))
             .and_then(|ai_result| {
                 if ai_result.response.contains("SELL") {
@@ -202,12 +199,6 @@ impl AiService for AiServiceLive {
                         "The Ai didn't respond with a clear order advice".to_string(),
                     ))
                 }
-            })?;
-        Ok(Order {
-            stock_quantity: stock_quantity,
-            stock: stock_data.stock,
-            order_type: order_type,
-            timestamp: SystemTime::now(),
-        })
+            })
     }
 }

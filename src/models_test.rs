@@ -19,6 +19,4 @@ mod money_model {
         assert!(maybe_money_model.is_err())
     }
 }
-mod stock {
-
-}
+mod stock {}

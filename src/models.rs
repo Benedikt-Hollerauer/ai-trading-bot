@@ -3,8 +3,9 @@ use serde::Deserialize;
 use std::string::ToString;
 use std::time::SystemTime;
 
+#[derive(Debug)]
 pub struct Money {
-    pub amount: f64
+    pub amount: f64,
 }
 
 impl Money {
@@ -16,22 +17,27 @@ impl Money {
             0
         };
         if amount < 0.0 {
-            Err(AppErrors::ModelCreationError(format!("The money amount can't be below 0. Amount provided: {amount}")))
+            Err(AppErrors::ModelCreationError(format!(
+                "The money amount can't be below 0. Amount provided: {amount}"
+            )))
         } else if digits_count > 2 {
-            Err(AppErrors::ModelCreationError(format!("There were too many digits. Amount provided: {amount}")))
+            Err(AppErrors::ModelCreationError(format!(
+                "There were too many digits. Amount provided: {amount}"
+            )))
         } else {
             Ok(Money { amount })
         }
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Stock {
-    ticker_symbol: String
+    ticker_symbol: String,
 }
 
 impl Stock {
     pub fn new(ticker_symbol: String) -> Stock {
-        Stock {ticker_symbol}
+        Stock { ticker_symbol }
     }
 
     pub fn get_ticker_symbol(self) -> String {
@@ -39,16 +45,18 @@ impl Stock {
     }
 }
 
+#[derive(Debug)]
 pub struct Order {
-    pub order_id: String,
+    pub stock_quantity: f64,
     pub stock: Stock,
     pub order_type: OrderType,
-    pub timestamp: SystemTime
+    pub timestamp: SystemTime,
 }
 
+#[derive(Debug)]
 pub enum OrderType {
-    Buy(Money),
-    Sell
+    Buy,
+    Sell,
 }
 
 #[derive(Debug)]
@@ -56,14 +64,14 @@ pub struct StockPricePerformance {
     pub date: String,
     pub open: String,
     pub high: String,
-    pub low: String
+    pub low: String,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct News {
     pub title: String,
     pub summary: String,
-    pub time_published: String
+    pub time_published: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -73,12 +81,13 @@ pub struct NewsApiResponse {
 
 #[derive(Debug)]
 pub struct StockData {
-    pub ticker_symbol: String,
+    pub stock: Stock,
     pub stock_price_performance: Vec<StockPricePerformance>,
-    pub news: Vec<News>
+    pub news: Vec<News>,
 }
 
 pub struct Config<'a> {
     pub alpha_vantage_api_key: &'a str,
-    pub interactive_brokers_connection_url_with_port: &'a str
+    pub interactive_brokers_connection_url_with_port: &'a str,
+    pub open_ai_api_key: &'a str,
 }

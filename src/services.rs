@@ -17,7 +17,7 @@ use std::time::SystemTime;
 
 pub trait TradingApiService {
     async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
-    fn place_order(order: Order) -> Result<(), AppErrors>;
+    fn place_order(order: Order) -> Result<String, AppErrors>;
     fn convert_money_amount_to_stock_quantity(
         amount: Money,
         ticker_symbol: String,
@@ -29,9 +29,8 @@ pub struct TradingApiServiceLive;
 
 pub trait AiService {
     async fn get_order_advice(
-        stock_quantity: f64,
         stock_data: StockData,
-    ) -> Result<Order, AppErrors>;
+    ) -> Result<OrderType, AppErrors>;
 }
 
 pub struct AiServiceLive;
@@ -84,7 +83,7 @@ impl TradingApiService for TradingApiServiceLive {
         })
     }
 
-    fn place_order(order: Order) -> Result<(), AppErrors> {
+    fn place_order(order: Order) -> Result<String, AppErrors> {
         let ticker = order.stock.get_ticker_symbol();
         let contract = Contract::stock(&*ticker);
 
@@ -102,7 +101,7 @@ impl TradingApiService for TradingApiServiceLive {
 
         client
             .place_order(order_id, &contract, &order)
-            .map(|_| ())
+            .map(|_| format!("{:?}", order))
             .map_err(|e| AppErrors::PlaceOrderError(e.to_string()))
     }
 
@@ -172,9 +171,8 @@ impl TradingApiService for TradingApiServiceLive {
 
 impl AiService for AiServiceLive {
     async fn get_order_advice(
-        stock_quantity: f64,
         stock_data: StockData,
-    ) -> Result<Order, AppErrors> {
+    ) -> Result<OrderType, AppErrors> {
         let ollama = Ollama::default();
         let model = "deepseek-r1:1.5b".to_string();
         let options = GenerationOptions::default().temperature(0.0);
@@ -190,7 +188,7 @@ impl AiService for AiServiceLive {
             .generate(GenerationRequest::new(model, prompt).options(options))
             .await;
 
-        let order_type = order_advice_result
+        order_advice_result
             .map_err(|error| AppErrors::GetOrderAdviceError(error.to_string()))
             .and_then(|ai_result| {
                 if ai_result.response.contains("SELL") {
@@ -202,12 +200,6 @@ impl AiService for AiServiceLive {
                         "The Ai didn't respond with a clear order advice".to_string(),
                     ))
                 }
-            })?;
-        Ok(Order {
-            stock_quantity: stock_quantity,
-            stock: stock_data.stock,
-            order_type: order_type,
-            timestamp: SystemTime::now(),
-        })
+            })
     }
 }

@@ -29,7 +29,7 @@ mod trading_api_service {
             order_type: OrderType::Buy,
             timestamp: SystemTime::now(),
         };
-        let maybe_successfully_placed_order: Result<(), AppErrors> =
+        let maybe_successfully_placed_order: Result<String, AppErrors> =
             TradingApiServiceLive::place_order(order_success_mock);
         println!("{:?}", maybe_successfully_placed_order);
         assert!(maybe_successfully_placed_order.is_ok())
@@ -43,7 +43,7 @@ mod trading_api_service {
             order_type: OrderType::Buy,
             timestamp: SystemTime::now(),
         };
-        let maybe_successfully_failed_order: Result<(), AppErrors> =
+        let maybe_successfully_failed_order: Result<String, AppErrors> =
             TradingApiServiceLive::place_order(order_failure_mock);
         println!("{:?}", maybe_successfully_failed_order);
         assert!(maybe_successfully_failed_order.is_err())
@@ -91,7 +91,7 @@ mod trading_api_service {
 
 mod ai_service {
     use crate::errors::AppErrors;
-    use crate::models::{News, Order, Stock, StockData, StockPricePerformance};
+    use crate::models::{News, Order, OrderType, Stock, StockData, StockPricePerformance};
     use crate::services::AiService;
     use crate::services::AiServiceLive;
     use tokio::test;
@@ -107,8 +107,8 @@ mod ai_service {
                 time_published: "20250204T025520".to_string()
             }]
         };
-        let maybe_order_advice: Result<Order, AppErrors> =
-            AiServiceLive::get_order_advice(1.1, test_stock_data).await;
+        let maybe_order_advice: Result<OrderType, AppErrors> =
+            AiServiceLive::get_order_advice(test_stock_data).await;
         assert!(maybe_order_advice.is_ok())
     }
 
@@ -128,8 +128,8 @@ mod ai_service {
                 time_published: "".to_string(),
             }],
         };
-        let maybe_order_advice: Result<Order, AppErrors> =
-            AiServiceLive::get_order_advice(1.1, test_stock_data).await;
+        let maybe_order_advice: Result<OrderType, AppErrors> =
+            AiServiceLive::get_order_advice(test_stock_data).await;
         println!("{:?}", maybe_order_advice);
         assert!(maybe_order_advice.is_err())
     }

@@ -1,0 +1,16 @@
+[package]
+name = "ai-trading-bot"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+#alpha_vantage = "0.11.0"
+#reqwest = { version = "0.12.12", features = ["blocking", "json"] }
+#tokio = { version = "1.43.0", features = ["full"] }
+#serde = { version = "1.0.217", features = ["derive"] }
+#ibapi = "1.0.12"
+#ollama-rs = "0.2.4"
+flutter_rust_bridge = "=2.7.1"

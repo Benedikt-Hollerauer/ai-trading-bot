@@ -1,5 +1,5 @@
 [package]
-name = "ai-trading-bot"
+name = "native"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,4 +10,3 @@ tokio = { version = "1.43.0", features = ["full"] }
 serde = { version = "1.0.217", features = ["derive"] }
 ibapi = "1.0.12"
 ollama-rs = "0.2.4"
-futures = "0.3.31"

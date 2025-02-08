@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/src/rust/api/simple.dart';
 import 'package:my_app/src/rust/frb_generated.dart';
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.dark().copyWith(
         primaryColor: Colors.blueGrey[900],
+        scaffoldBackgroundColor: Colors.blueGrey[900],
+        cardColor: Colors.black,
+        cardTheme: const CardTheme(color: Colors.black),
         colorScheme: ColorScheme.dark(
           primary: Colors.cyan[300]!,
           secondary: Colors.cyanAccent[100]!,
         ),
-        scaffoldBackgroundColor: Colors.blueGrey[900],
       ),
       home: const MainPage(),
     );
@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
-
   @override
   State<MainPage> createState() => _MainPageState();
 }
@@ -45,32 +44,42 @@ class _MainPageState extends State<MainPage> {
     {'symbol': 'AMZN', 'name': 'Amazon.com Inc.'},
   ];
 
+  final ButtonStyle _commonButtonStyle = ElevatedButton.styleFrom(
+    minimumSize: const Size(double.infinity, 60),
+    textStyle: const TextStyle(fontSize: 20),
+  );
+
+  final TextStyle _infoTextStyle = const TextStyle(fontSize: 20);
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final appBarHeight = screenHeight * 0.18;
     final bodyHeight = screenHeight * 0.82;
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(appBarHeight),
         child: AppBar(
           toolbarHeight: appBarHeight,
-          title: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 15),
-            child: Text(
-              'Stock Analyzer',
-              style: TextStyle(fontSize: 24),
-            ),
+          title: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            child: const Text('Stock Analyzer', style: TextStyle(fontSize: 24)),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.code, size: 28),
-              onPressed: () => _launchURL('https://github.com/yourprofile'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: IconButton(
+                icon: const Icon(Icons.code, size: 28),
+                onPressed: () => _launchURL('https://github.com/yourprofile'),
+              ),
             ),
-            IconButton(
-              icon: const Icon(Icons.public, size: 28),
-              onPressed: () => _launchURL('https://linkedin.com/in/yourprofile'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: IconButton(
+                icon: const Icon(Icons.public, size: 28),
+                onPressed: () =>
+                    _launchURL('https://linkedin.com/in/yourprofile'),
+              ),
             ),
           ],
         ),
@@ -81,11 +90,9 @@ class _MainPageState extends State<MainPage> {
           padding: const EdgeInsets.all(16.0),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              if (constraints.maxWidth > 800) {
-                return _buildDesktopLayout();
-              } else {
-                return _buildMobileLayout();
-              }
+              return constraints.maxWidth > 800
+                  ? _buildDesktopLayout()
+                  : _buildMobileLayout();
             },
           ),
         ),
@@ -108,10 +115,7 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
         const SizedBox(height: 20),
-        Expanded(
-          flex: 5,
-          child: _buildInfoSection(),
-        ),
+        Expanded(flex: 5, child: _buildInfoSection()),
       ],
     );
   }
@@ -121,14 +125,12 @@ class _MainPageState extends State<MainPage> {
       child: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: _buildInputForm(),
-          ),
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: _buildInputForm()),
           const SizedBox(height: 20),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: _buildOutputSection(),
-          ),
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: _buildOutputSection()),
           const SizedBox(height: 20),
           _buildInfoSection(),
         ],
@@ -156,10 +158,12 @@ class _MainPageState extends State<MainPage> {
                   items: _stocks
                       .map((stock) => DropdownMenuItem<String>(
                             value: stock['symbol'] as String,
-                            child: Text('${stock['symbol']} - ${stock['name']}'),
+                            child: Text(
+                                '${stock['symbol']} - ${stock['name']}'),
                           ))
                       .toList(),
-                  onChanged: (value) => setState(() => _selectedTicker = value!),
+                  onChanged: (value) =>
+                      setState(() => _selectedTicker = value!),
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
@@ -182,8 +186,9 @@ class _MainPageState extends State<MainPage> {
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 60,
                   child: ElevatedButton(
+                    style: _commonButtonStyle,
                     onPressed: _submitForm,
                     child: const Text('Analyze Investment'),
                   ),
@@ -200,17 +205,16 @@ class _MainPageState extends State<MainPage> {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 600),
       child: Card(
-        color: Colors.blueGrey[900],
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: SingleChildScrollView(
             child: Text(
               _output,
               style: TextStyle(
-                color: _output.startsWith('Error') 
+                color: _output.startsWith('Error')
                     ? Colors.redAccent[100]
                     : Colors.white,
-                fontSize: 16,
+                fontSize: 20,
               ),
             ),
           ),
@@ -220,50 +224,38 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _buildInfoSection() {
-    final currentStock = _stocks.firstWhere(
-      (stock) => stock['symbol'] == _selectedTicker,
-    );
-
+    final currentStock = _stocks
+        .firstWhere((stock) => stock['symbol'] == _selectedTicker);
     return Card(
-      color: Colors.blueGrey[800],
       child: Padding(
         padding: const EdgeInsets.all(24.0),
-        child: Column(
+        child: Row(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Stock Name:', style: TextStyle(fontSize: 16)),
-                Text(currentStock['name'], style: const TextStyle(fontSize: 16)),
-              ],
+            Expanded(
+              flex: 7,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildInfoRow('Stock Name:', currentStock['name']),
+                  const SizedBox(height: 10),
+                  _buildInfoRow('Invested Amount:', '€${_amountController.text}'),
+                  const SizedBox(height: 10),
+                  _buildInfoRow('Current Price:',
+                      '€${_currentPrice.toStringAsFixed(2)}'),
+                ],
+              ),
             ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Invested Amount:', style: TextStyle(fontSize: 16)),
-                Text(
-                  '€${_amountController.text}',
-                  style: const TextStyle(fontSize: 16),
+            Expanded(
+              flex: 3,
+              child: Center(
+                child: ElevatedButton.icon(
+                  style: _commonButtonStyle,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Refresh Data'),
+                  onPressed: _refreshStockData,
                 ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Current Price:', style: TextStyle(fontSize: 16)),
-                Text(
-                  '€${_currentPrice.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.refresh),
-              label: const Text('Refresh Data'),
-              onPressed: _refreshStockData,
+              ),
             ),
           ],
         ),
@@ -271,22 +263,29 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: _infoTextStyle),
+        Text(value, style: _infoTextStyle),
+      ],
+    );
+  }
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      final currentStock = _stocks.firstWhere(
-        (stock) => stock['symbol'] == _selectedTicker,
-      );
+      final currentStock =
+          _stocks.firstWhere((stock) => stock['symbol'] == _selectedTicker);
       setState(() {
-        _output = 'Analyzing ${currentStock['name']} '
-            'with €${_amountController.text}...';
+        _output =
+            'Analyzing ${currentStock['name']} with €${_amountController.text}...';
       });
       _refreshStockData();
     }
   }
 
-
   void _refreshStockData() {
-    // Simulated price update
     setState(() {
       _currentPrice = 150.0 + (DateTime.now().second % 100);
     });

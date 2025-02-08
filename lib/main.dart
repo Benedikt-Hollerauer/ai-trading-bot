@@ -62,21 +62,24 @@ class _MainPageState extends State<MainPage> {
         child: AppBar(
           toolbarHeight: appBarHeight,
           title: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            child: const Text('Stock Analyzer', style: TextStyle(fontSize: 24)),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: const Text(
+              'Stock Analyzer',
+              style: TextStyle(fontSize: 28),
+            ),
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: IconButton(
-                icon: const Icon(Icons.code, size: 28),
+                icon: const Icon(Icons.code, size: 32),
                 onPressed: () => _launchURL('https://github.com/yourprofile'),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: IconButton(
-                icon: const Icon(Icons.public, size: 28),
+                icon: const Icon(Icons.public, size: 32),
                 onPressed: () =>
                     _launchURL('https://linkedin.com/in/yourprofile'),
               ),
@@ -233,27 +236,33 @@ class _MainPageState extends State<MainPage> {
           children: [
             Expanded(
               flex: 7,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildInfoRow('Stock Name:', currentStock['name']),
-                  const SizedBox(height: 10),
-                  _buildInfoRow('Invested Amount:', '€${_amountController.text}'),
-                  const SizedBox(height: 10),
-                  _buildInfoRow('Current Price:',
-                      '€${_currentPrice.toStringAsFixed(2)}'),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 100),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildInfoRow('Stock Name:', currentStock['name']),
+                    const SizedBox(height: 10),
+                    _buildInfoRow('Invested Amount:', '€${_amountController.text}'),
+                    const SizedBox(height: 10),
+                    _buildInfoRow(
+                        'Current Price:', '€${_currentPrice.toStringAsFixed(2)}'),
+                  ],
+                ),
               ),
             ),
             Expanded(
               flex: 3,
-              child: Center(
-                child: ElevatedButton.icon(
-                  style: _commonButtonStyle,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Refresh Data'),
-                  onPressed: _refreshStockData,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 70),
+                child: Center(
+                  child: ElevatedButton.icon(
+                    style: _commonButtonStyle,
+                    icon: const Icon(Icons.refresh, size: 32),
+                    label: const Text('Refresh Data'),
+                    onPressed: _refreshStockData,
+                  ),
                 ),
               ),
             ),

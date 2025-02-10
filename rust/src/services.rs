@@ -1,8 +1,6 @@
 use crate::config::CONFIG;
 use crate::errors::AppErrors;
-use crate::models::{
-    Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockPricePerformance,
-};
+use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockInvestment, StockPricePerformance};
 use alpha_vantage::stock_time::StockFunction;
 use ibapi::accounts::PositionUpdate;
 use ibapi::contracts::Contract;
@@ -22,6 +20,7 @@ pub trait TradingApiService {
         ticker_symbol: String,
     ) -> Result<f64, AppErrors>;
     fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors>;
+    fn get_current_investment(stock: Stock) -> Result<StockInvestment, AppErrors>;
 }
 
 pub struct TradingApiServiceLive;
@@ -165,6 +164,10 @@ impl TradingApiService for TradingApiServiceLive {
             )
         )?;
         Ok(position.position.abs())
+    }
+
+    fn get_current_investment(stock: Stock) -> Result<StockInvestment, AppErrors> {
+        todo!()
     }
 }
 

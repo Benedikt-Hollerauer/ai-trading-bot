@@ -1,6 +1,6 @@
 mod trading_api_service {
     use crate::errors::AppErrors;
-    use crate::models::{Money, Order, OrderType, Stock, StockData};
+    use crate::models::{Money, Order, OrderType, Stock, StockData, StockInvestment};
     use crate::services::TradingApiService;
     use crate::services::TradingApiServiceLive;
     use std::time::SystemTime;
@@ -89,9 +89,9 @@ mod trading_api_service {
     }
 
     #[test]
-    async fn test_get_get_current_investment_success() {
+    async fn test_get_current_investment_success() {
         let maybe_current_investment: Result<StockInvestment, AppErrors> =
-            TradingApiServiceLive::get_current_investment("GOOG".to_string());
+            TradingApiServiceLive::get_current_investment(Stock::new("GOOG".to_string()));
         println!("{:?}", maybe_current_investment);
         assert!(maybe_stock_data.is_ok())
     }
@@ -100,7 +100,7 @@ mod trading_api_service {
     async fn test_get_current_investment_failure() {
         let maybe_current_investment: Result<StockInvestment, AppErrors> =
             TradingApiServiceLive::get_current_investment(
-                "not_a_ticker_symbol".to_string(),
+                Stock::new("not_a_ticker_symbol".to_string()),
             );
         assert!(maybe_current_investment.is_err())
     }

@@ -32,7 +32,7 @@ impl Money {
 
 #[derive(Debug, Clone)]
 pub struct Stock {
-    ticker_symbol: String,
+    ticker_symbol: String
 }
 
 impl Stock {
@@ -90,4 +90,11 @@ pub struct Config<'a> {
     pub alpha_vantage_api_key: &'a str,
     pub interactive_brokers_connection_url_with_port: &'a str,
     pub open_ai_api_key: &'a str,
+}
+
+#[derive(Debug)]
+pub struct StockInvestment {
+    stock: Stock,
+    stock_name: String,
+    current_invested_amount: Money,
 }

@@ -87,6 +87,23 @@ mod trading_api_service {
             );
         assert!(maybe_stock_data.is_err())
     }
+
+    #[test]
+    async fn test_get_get_current_investment_success() {
+        let maybe_current_investment: Result<StockInvestment, AppErrors> =
+            TradingApiServiceLive::get_current_investment("GOOG".to_string());
+        println!("{:?}", maybe_current_investment);
+        assert!(maybe_stock_data.is_ok())
+    }
+
+    #[test]
+    async fn test_get_current_investment_failure() {
+        let maybe_current_investment: Result<StockInvestment, AppErrors> =
+            TradingApiServiceLive::get_current_investment(
+                "not_a_ticker_symbol".to_string(),
+            );
+        assert!(maybe_current_investment.is_err())
+    }
 }
 
 mod ai_service {

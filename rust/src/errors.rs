@@ -6,4 +6,5 @@ pub enum AppErrors {
     GetQuantityToSellEverythingError(String),
     PlaceOrderError(String),
     GetOrderAdviceError(String),
+    GetCurrentInvestmentError(String),
 }

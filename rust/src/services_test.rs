@@ -91,7 +91,7 @@ mod trading_api_service {
     #[test]
     async fn test_get_current_investment_success() {
         let maybe_current_investment: Result<StockInvestment, AppErrors> =
-            TradingApiServiceLive::get_current_investment(Stock::new("GOOG".to_string()));
+            TradingApiServiceLive::get_current_investment(Stock::new("AAPL".to_string()));
         println!("{:?}", maybe_current_investment);
         assert!(maybe_current_investment.is_ok())
     }

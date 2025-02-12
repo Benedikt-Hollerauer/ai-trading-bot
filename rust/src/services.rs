@@ -197,7 +197,7 @@ impl TradingApiService for TradingApiServiceLive {
         Ok(StockInvestment {
             stock: stock.clone(),
             stock_name: stock_name,
-            current_invested_amount: Money::new(invested_amount)?
+            current_invested_amount: Money::new(invested_amount)?,
         })
     }
 }

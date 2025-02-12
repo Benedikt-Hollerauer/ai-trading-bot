@@ -1,20 +1,18 @@
-use std::string::ToString;
 use crate::models::Stock;
+use std::string::ToString;
 
-mod service_test {
-
-}
+mod service_test {}
 pub(crate) const INVESTED_PAPER_TRADING_STOCK: Stock = Stock { ticker_symbol: "AAPL" };
 const NOT_VALID_STOCK: Stock = Stock { ticker_symbol: "Not a ticker symbol" };
 
 mod trading_api_service {
     use crate::errors::AppErrors;
-    use crate::models::{Money, Order, OrderType, Stock, StockData, StockInvestment};
+    use crate::models::{Money, Order, OrderType, StockData, StockInvestment};
     use crate::services::TradingApiService;
     use crate::services::TradingApiServiceLive;
+    use crate::services_test::{INVESTED_PAPER_TRADING_STOCK, NOT_VALID_STOCK};
     use std::time::SystemTime;
     use tokio::test;
-    use crate::services_test::{INVESTED_PAPER_TRADING_STOCK, NOT_VALID_STOCK};
 
     #[test]
     async fn test_get_stock_data_method_success() {
@@ -62,12 +60,13 @@ mod trading_api_service {
     #[test]
     async fn test_convert_money_amount_to_stock_quantity_method_success() {
         let money_mock = Money::new(1.1).unwrap();
-        let maybe_stock_data: Result<f64, AppErrors> =
+        let maybe_quantity: Result<f64, AppErrors> =
             TradingApiServiceLive::convert_money_amount_to_stock_quantity(
                 money_mock,
                 INVESTED_PAPER_TRADING_STOCK,
             );
-        assert!(maybe_stock_data.is_ok())
+        println!("{:?}", maybe_quantity);
+        assert!(maybe_quantity.is_ok())
     }
 
     #[test]
@@ -118,11 +117,11 @@ mod trading_api_service {
 
 mod ai_service {
     use crate::errors::AppErrors;
-    use crate::models::{News, OrderType, Stock, StockData, StockPricePerformance};
+    use crate::models::{News, OrderType, StockData, StockPricePerformance};
     use crate::services::AiService;
     use crate::services::AiServiceLive;
-    use tokio::test;
     use crate::services_test::{INVESTED_PAPER_TRADING_STOCK, NOT_VALID_STOCK};
+    use tokio::test;
 
     #[test]
     async fn test_get_order_advice_method_success() {

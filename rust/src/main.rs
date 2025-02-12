@@ -1,4 +1,4 @@
-use crate::models::{Money, Order, OrderType, Stock};
+use crate::models::{Money, Order, OrderType};
 use crate::services::{AiService, AiServiceLive, TradingApiService, TradingApiServiceLive};
 use std::time::SystemTime;
 

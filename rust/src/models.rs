@@ -32,17 +32,7 @@ impl Money {
 
 #[derive(Debug, Clone)]
 pub struct Stock {
-    ticker_symbol: String
-}
-
-impl Stock {
-    pub fn new(ticker_symbol: String) -> Stock {
-        Stock { ticker_symbol }
-    }
-
-    pub fn get_ticker_symbol(self) -> String {
-        self.ticker_symbol
-    }
+    pub ticker_symbol:  &'static str
 }
 
 #[derive(Debug)]

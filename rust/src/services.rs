@@ -17,9 +17,9 @@ pub trait TradingApiService {
     fn place_order(order: Order) -> Result<String, AppErrors>;
     fn convert_money_amount_to_stock_quantity(
         amount: Money,
-        ticker_symbol: String,
+        stock: Stock,
     ) -> Result<f64, AppErrors>;
-    fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors>;
+    fn get_quantity_to_sell_everything(stock: Stock) -> Result<f64, AppErrors>;
     fn get_current_investment(stock: Stock) -> Result<StockInvestment, AppErrors>;
 }
 
@@ -35,7 +35,7 @@ pub struct AiServiceLive;
 
 impl TradingApiService for TradingApiServiceLive {
     async fn get_stock_data(stock: Stock) -> Result<StockData, AppErrors> {
-        let ticker_symbol = stock.get_ticker_symbol();
+        let ticker_symbol = stock.ticker_symbol;
         let api_key = alpha_vantage::set_api(CONFIG.alpha_vantage_api_key, reqwest::Client::new());
         let stock_price_performance: Result<Vec<StockPricePerformance>, AppErrors> = api_key
             .stock_time(StockFunction::Monthly, &ticker_symbol)
@@ -75,14 +75,14 @@ impl TradingApiService for TradingApiServiceLive {
         };
 
         Ok(StockData {
-            stock: Stock::new(ticker_symbol.to_string()),
+            stock: Stock { ticker_symbol: &*ticker_symbol },
             stock_price_performance: stock_price_performance?,
             news: news?,
         })
     }
 
     fn place_order(order: Order) -> Result<String, AppErrors> {
-        let ticker = order.stock.get_ticker_symbol();
+        let ticker = order.stock.ticker_symbol;
         let contract = Contract::stock(&*ticker);
 
         let mut client = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
@@ -105,9 +105,9 @@ impl TradingApiService for TradingApiServiceLive {
 
     fn convert_money_amount_to_stock_quantity(
         amount: Money,
-        ticker_symbol: String,
+        stock: Stock,
     ) -> Result<f64, AppErrors> {
-        let contract = Contract::stock(&*ticker_symbol);
+        let contract = Contract::stock(&*stock.ticker_symbol);
         let current_close =
             IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
                 .and_then(|client: IbClient| {
@@ -126,7 +126,7 @@ impl TradingApiService for TradingApiServiceLive {
                 })
                 .map_err(|error| {
                     AppErrors::ConvertMoneyToStockQuantityError(
-                        error.to_string() + " for ticker: " + &ticker_symbol,
+                        error.to_string() + " for ticker: " + &stock.ticker_symbol,
                     )
                 })
                 .and_then(|close| {
@@ -138,7 +138,7 @@ impl TradingApiService for TradingApiServiceLive {
         Ok((current_close / amount.amount).floor())
     }
 
-    fn get_quantity_to_sell_everything(ticker_symbol: String) -> Result<f64, AppErrors> {
+    fn get_quantity_to_sell_everything(stock: Stock) -> Result<f64, AppErrors> {
         let client = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
             .map_err(|error| AppErrors::GetQuantityToSellEverythingError(error.to_string()))?;
         let positions = client
@@ -150,7 +150,7 @@ impl TradingApiService for TradingApiServiceLive {
                 !matches!(position_update, PositionUpdate::PositionEnd)
             ).find(|position_update|
             match position_update {
-                PositionUpdate::Position(position) => position.contract.symbol == ticker_symbol,
+                PositionUpdate::Position(position) => position.contract.symbol == stock.ticker_symbol,
                 _ => false
             }
         ).and_then(|position_update|
@@ -160,7 +160,7 @@ impl TradingApiService for TradingApiServiceLive {
             }
         ).ok_or(
             AppErrors::GetQuantityToSellEverythingError(
-                "There was an error while trying to get the latest closing amount. Possibly there are no positions available or not the position with this ticker_symbol: ".to_string() + &*ticker_symbol
+                "There was an error while trying to get the latest closing amount. Possibly there are no positions available or not the position with this ticker_symbol: ".to_string() + &*stock.ticker_symbol
             )
         )?;
         Ok(position.position.abs())
@@ -170,7 +170,7 @@ impl TradingApiService for TradingApiServiceLive {
         let client = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
             .map_err(|error| AppErrors::GetCurrentInvestmentError(error.to_string()))?;
 
-        let ticker_symbol = stock.clone().get_ticker_symbol().clone();
+        let ticker_symbol = stock.clone().ticker_symbol.clone();
         let positions = client
             .positions()
             .map_err(|error| AppErrors::GetCurrentInvestmentError(error.to_string()))?;
@@ -209,7 +209,7 @@ impl AiService for AiServiceLive {
         let ollama = Ollama::default();
         let model = "deepseek-r1:1.5b".to_string();
         let options = GenerationOptions::default().temperature(0.0);
-        let ticker_symbol = stock_data.stock.clone().get_ticker_symbol();
+        let ticker_symbol = stock_data.stock.clone().ticker_symbol;
         let prompt = format!(
             "Portfolio analysis:\nTicker: {}\nNews: {:?}\nPrice: {:?}\nShould I SELL or BUY? Reply with only one word: SELL or BUY. (If you are not sure, do not reply with one of those words)",
             ticker_symbol,

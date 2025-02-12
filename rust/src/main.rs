@@ -13,16 +13,16 @@ mod services_test;
 async fn main() {
     let order_process_result = async {
         let amount_to_invest = Money::new(1.1); //TODO implement through ui
-        let stock = Stock::new("GOOG".to_string()); //TODO implement through ui
+        let stock = crate::services_test::INVESTED_PAPER_TRADING_STOCK; //TODO implement through ui
         let stock_data = TradingApiServiceLive::get_stock_data(stock.clone()).await?;
         let order_type = AiServiceLive::get_order_advice(stock_data).await?;
         let stock_quantity = match order_type {
             OrderType::Buy => TradingApiServiceLive::convert_money_amount_to_stock_quantity(
                 amount_to_invest?,
-                stock.clone().get_ticker_symbol(),
+                stock.clone(),
             ),
             OrderType::Sell => TradingApiServiceLive::get_quantity_to_sell_everything(
-                stock.clone().get_ticker_symbol()
+                stock.clone()
             )
         }?;
         let order = Order {

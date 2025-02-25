@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/src/rust/api/simple.dart';
-import 'package:my_app/src/rust/frb_generated.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() => runApp(const MyApp());

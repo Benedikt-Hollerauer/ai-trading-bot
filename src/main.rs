@@ -1,7 +1,9 @@
 use crate::models::{Money, Order, OrderType};
 use crate::services::{AiService, AiServiceLive, TradingApiService, TradingApiServiceLive};
 use std::time::SystemTime;
-use axum::response::Html;
+use axum::handler::Handler;
+use axum::http::HeaderMap;
+use axum::response::{AppendHeaders, Html};
 use axum::Router;
 use axum::routing::get;
 
@@ -14,14 +16,14 @@ mod services_test;
 
 #[tokio::main]
 async fn main() {
-    // build our application with a route
-    let app = Router::new().route("/", get(handler));
+    let app = Router::new()
+        .route("/", get(handler))
+        .route("/style.css", get(serve_css))
+        .route("/app.js", get(serve_js));
 
-    // run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
-    println!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
     //let order_process_result = async {
     //    let amount_to_invest = Money::new(1.1); //TODO implement through ui
@@ -53,5 +55,17 @@ async fn main() {
 }
 
 async fn handler() -> Html<&'static str> {
-    Html("<h1>Hello, World!</h1>")
+    Html(include_str!("../index.html"))
+}
+
+async fn serve_css() -> (HeaderMap, &'static str) {
+    let mut headers = HeaderMap::new();
+    headers.insert("content-type", "text/css".parse().unwrap());
+    (headers, include_str!("../style.css"))
+}
+
+async fn serve_js() -> (HeaderMap, &'static str) {
+    let mut headers = HeaderMap::new();
+    headers.insert("content-type", "application/javascript".parse().unwrap());
+    (headers, include_str!("../app.js"))
 }

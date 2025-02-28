@@ -11,3 +11,4 @@ serde = { version = "1.0.217", features = ["derive"] }
 ibapi = "1.0.12"
 ollama-rs = "0.2.4"
 axum = "0.8.1"
+async-trait = "0.1.86"

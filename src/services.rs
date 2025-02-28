@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use crate::config::CONFIG;
 use crate::errors::AppErrors;
 use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockInvestment, StockPricePerformance};
@@ -13,27 +14,34 @@ use ollama_rs::generation::options::GenerationOptions;
 use ollama_rs::Ollama;
 use reqwest::Client;
 
-pub trait TradingApiService {
-    async fn get_stock_data(stock_id: Stock) -> Result<StockData, AppErrors>;
-    fn place_order(order: Order) -> Result<String, AppErrors>;
+#[async_trait]
+pub trait TradingApiService: Send + Sync {
+    async fn get_stock_data(&self, stock_id: Stock) -> Result<StockData, AppErrors>;
+    fn place_order(&self, order: Order) -> Result<String, AppErrors>;
     fn convert_money_amount_to_stock_quantity(
+        &self,
         amount: Money,
         stock: Stock,
     ) -> Result<f64, AppErrors>;
-    fn get_quantity_to_sell_everything(stock: Stock) -> Result<f64, AppErrors>;
-    fn get_current_investment(stock: Stock) -> Result<StockInvestment, AppErrors>;
+    fn get_quantity_to_sell_everything(&self, stock: Stock) -> Result<f64, AppErrors>;
+    fn get_current_investment(&self, stock: Stock) -> Result<StockInvestment, AppErrors>;
 }
 
+#[derive(Clone)]
 pub struct TradingApiServiceLive;
 
-pub trait AiService {
+#[async_trait]
+pub trait AiService: Send + Sync {
     async fn get_order_advice(
+        &self,
         stock_data: StockData,
     ) -> Result<OrderType, AppErrors>;
 }
 
+#[derive(Clone)]
 pub struct AiServiceLive;
 
+#[async_trait]
 impl TradingApiService for TradingApiServiceLive {
     async fn get_stock_data(stock: Stock) -> Result<StockData, AppErrors> {
         let ticker_symbol = stock.ticker_symbol;
@@ -82,7 +90,7 @@ impl TradingApiService for TradingApiServiceLive {
         })
     }
 
-    fn place_order(order: Order) -> Result<String, AppErrors> {
+    fn place_order(&self, order: Order) -> Result<String, AppErrors> {
         let ticker = order.stock.ticker_symbol;
         let contract = Contract::stock(&*ticker);
 
@@ -105,6 +113,7 @@ impl TradingApiService for TradingApiServiceLive {
     }
 
     fn convert_money_amount_to_stock_quantity(
+        &self,
         amount: Money,
         stock: Stock,
     ) -> Result<f64, AppErrors> {
@@ -139,7 +148,7 @@ impl TradingApiService for TradingApiServiceLive {
         Ok((current_close / amount.amount).floor())
     }
 
-    fn get_quantity_to_sell_everything(stock: Stock) -> Result<f64, AppErrors> {
+    fn get_quantity_to_sell_everything(&self, stock: Stock) -> Result<f64, AppErrors> {
         let client = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
             .map_err(|error| AppErrors::GetQuantityToSellEverythingError(error.to_string()))?;
         let positions = client
@@ -167,7 +176,7 @@ impl TradingApiService for TradingApiServiceLive {
         Ok(position.position.abs())
     }
 
-    fn get_current_investment(stock: Stock) -> Result<StockInvestment, AppErrors> {
+    fn get_current_investment(&self, stock: Stock) -> Result<StockInvestment, AppErrors> {
         let client = IbClient::connect(CONFIG.interactive_brokers_connection_url_with_port, 1)
             .map_err(|error| AppErrors::GetCurrentInvestmentError(error.to_string()))?;
 
@@ -203,8 +212,10 @@ impl TradingApiService for TradingApiServiceLive {
     }
 }
 
+#[async_trait]
 impl AiService for AiServiceLive {
     async fn get_order_advice(
+        &self,
         stock_data: StockData,
     ) -> Result<OrderType, AppErrors> {
         let ollama = Ollama::default();

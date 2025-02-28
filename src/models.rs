@@ -32,12 +32,12 @@ impl Money {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Stock {
     pub ticker_symbol: &'static str,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Order {
     pub stock_quantity: f64,
     pub stock: Stock,
@@ -45,7 +45,7 @@ pub struct Order {
     pub timestamp: SystemTime,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum OrderType {
     Buy,
     Sell,

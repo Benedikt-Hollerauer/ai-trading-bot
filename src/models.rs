@@ -32,9 +32,9 @@ impl Money {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Stock {
-    pub ticker_symbol: &'static str,
+    pub ticker_symbol: String,
 }
 
 #[derive(Debug, Clone)]

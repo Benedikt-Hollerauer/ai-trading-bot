@@ -43,7 +43,7 @@ pub struct AiServiceLive;
 
 #[async_trait]
 impl TradingApiService for TradingApiServiceLive {
-    async fn get_stock_data(stock: Stock) -> Result<StockData, AppErrors> {
+    async fn get_stock_data(&self, stock: Stock) -> Result<StockData, AppErrors> {
         let ticker_symbol = stock.ticker_symbol;
         let api_key = alpha_vantage::set_api(CONFIG.alpha_vantage_api_key, reqwest::Client::new());
         let stock_price_performance: Result<Vec<StockPricePerformance>, AppErrors> = api_key
@@ -84,7 +84,7 @@ impl TradingApiService for TradingApiServiceLive {
         };
 
         Ok(StockData {
-            stock: Stock { ticker_symbol: &*ticker_symbol },
+            stock: Stock { ticker_symbol: ticker_symbol.to_string() },
             stock_price_performance: stock_price_performance?,
             news: news?,
         })

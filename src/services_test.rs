@@ -1,9 +1,16 @@
 use crate::models::Stock;
 use std::string::ToString;
+use lazy_static::lazy_static;
 
-mod service_test {}
-pub(crate) const INVESTED_PAPER_TRADING_STOCK: Stock = Stock { ticker_symbol: "AAPL" };
-const NOT_VALID_STOCK: Stock = Stock { ticker_symbol: "Not a ticker symbol" };
+lazy_static! {
+    pub static ref INVESTED_PAPER_TRADING_STOCK: Stock = Stock {
+        ticker_symbol: String::from("AAPL")
+    };
+    pub static ref NOT_VALID_STOCK: Stock = Stock {
+        ticker_symbol: String::from("Not a ticker symbol")
+    };
+}
+
 
 mod trading_api_service {
     use crate::errors::AppErrors;

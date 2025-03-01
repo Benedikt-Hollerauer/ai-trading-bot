@@ -34,7 +34,7 @@ struct AnalysisResponse {
     price: f64,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Clone)]
 struct AppState {
     trading_service: Arc<dyn TradingApiService + Send + Sync>,
     ai_service: Arc<dyn AiService + Send + Sync>,
@@ -94,11 +94,13 @@ async fn analyze_investment(
 ) -> Result<Json<AnalysisResponse>, String> {
     let analysis_request = payload.clone();
     let ticker_symbol = &*analysis_request.ticker.clone();
-    let stock = Stock { ticker_symbol };
+    let stock = Stock { ticker_symbol: ticker_symbol.to_string() };
 
-    let stock_data = state.trading_service.get_stock_data(Stock { ticker_symbol: &*payload.ticker })
+    let stock_data = state.trading_service.get_stock_data(stock.clone())
         .await
         .map_err(|e| format!("{:?}", e))?;
+
+    println!("_________________________");
 
     let order_type = state.ai_service.get_order_advice(stock_data)
         .await
@@ -107,16 +109,16 @@ async fn analyze_investment(
     let quantity = match order_type {
         OrderType::Buy => state.trading_service.convert_money_amount_to_stock_quantity(
             Money::new(payload.amount).map_err(|e| format!("{:?}", e))?,
-            stock
+            stock.clone()
         ),
         OrderType::Sell => state.trading_service.get_quantity_to_sell_everything(
-            stock
+            stock.clone()
         )
     }.map_err(|e| format!("{:?}", e))?;
 
     let order = Order {
         stock_quantity: quantity,
-        stock: stock,
+        stock: Stock { ticker_symbol: ticker_symbol.to_string() },
         order_type,
         timestamp: SystemTime::now(),
     };

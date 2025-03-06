@@ -1,12 +1,11 @@
-use std::clone;
 use crate::models::{Money, Order, OrderType, Stock};
 use crate::services::{AiService, AiServiceLive, TradingApiService, TradingApiServiceLive};
-use std::time::SystemTime;
 use axum::handler::Handler;
 use axum::http::HeaderMap;
-use axum::response::{AppendHeaders, Html};
-use axum::{Json, Router};
+use axum::response::Html;
 use axum::routing::{get, post};
+use axum::{Json, Router};
+use std::time::SystemTime;
 
 mod config;
 mod errors;
@@ -15,15 +14,23 @@ mod models_test;
 mod services;
 mod services_test;
 
+use axum::extract::State;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use axum::extract::State;
 
 // Add these structs
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct AnalysisRequest {
     ticker: String,
     amount: f64,
+}
+
+#[derive(Debug, Serialize)]
+struct ErrorResponse {
+    error_type: String,
+    message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    details: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -57,6 +64,9 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
+
+    println!("Listening on http://{}", listener.local_addr().unwrap());
+
     axum::serve(listener, app).await.unwrap();
     //let order_process_result = async {
     //    let amount_to_invest = Money::new(1.1); //TODO implement through ui
@@ -90,31 +100,50 @@ async fn main() {
 // Add this handler function
 async fn analyze_investment(
     State(state): State<AppState>,
-    Json(payload): Json<AnalysisRequest>
-) -> Result<Json<AnalysisResponse>, String> {
+    Json(payload): Json<AnalysisRequest>,
+) -> Result<Json<AnalysisResponse>, Json<ErrorResponse>> {
     let analysis_request = payload.clone();
     let ticker_symbol = &*analysis_request.ticker.clone();
-    let stock = Stock { ticker_symbol: ticker_symbol.to_string() };
+
+    let stock = Stock {
+        ticker_symbol: analysis_request.ticker.clone()
+    };
 
     let stock_data = state.trading_service.get_stock_data(stock.clone())
         .await
-        .map_err(|e| format!("{:?}", e))?;
+        .map_err(|e| Json(ErrorResponse {
+            error_type: "DATA_FETCH_FAILED".into(),
+            message: "Failed to retrieve stock data".into(),
+            details: Some(format!("{:?}", e)),
+        }))?;
 
     println!("_________________________");
 
     let order_type = state.ai_service.get_order_advice(stock_data)
         .await
-        .map_err(|e| format!("{:?}", e))?;
+        .map_err(|e| Json(ErrorResponse {
+            error_type: "ORDER_ADVICE_FETCH_FAILED".into(),
+            message: "Failed to retrieve order advice".into(),
+            details: Some(format!("{:?}", e)),
+        }))?;
 
     let quantity = match order_type {
         OrderType::Buy => state.trading_service.convert_money_amount_to_stock_quantity(
-            Money::new(payload.amount).map_err(|e| format!("{:?}", e))?,
-            stock.clone()
+            Money::new(payload.amount).map_err(|e| Json(ErrorResponse {
+                error_type: "CONVERTING_MONEY_TO_STOCK_QUANTITY_FAILED".into(),
+                message: "Failed to convert to stock quantity".into(),
+                details: Some(format!("{:?}", e)),
+            }))?,
+            stock.clone(),
         ),
         OrderType::Sell => state.trading_service.get_quantity_to_sell_everything(
             stock.clone()
         )
-    }.map_err(|e| format!("{:?}", e))?;
+    }.map_err(|e| Json(ErrorResponse {
+        error_type: "GETTING_THE_QUANTITY_FAILED".into(),
+        message: "Failed to get the quantity".into(),
+        details: Some(format!("{:?}", e)),
+    }))?;
 
     let order = Order {
         stock_quantity: quantity,
@@ -124,13 +153,17 @@ async fn analyze_investment(
     };
 
     state.trading_service.place_order(order.clone())
-        .map_err(|e| format!("{:?}", e))?;
+        .map_err(|e| Json(ErrorResponse {
+            error_type: "PLACING_THE_ORDER_FAILED".into(),
+            message: "Failed to place the order".into(),
+            details: Some(format!("Error: {:?}, Order: {:?}", e, order)),
+        }))?;
 
     Ok(Json(AnalysisResponse {
         message: "Analysis complete".to_string(),
         order_type: format!("{:?}", order.order_type),
         quantity: order.stock_quantity,
-        price: 1.1//stock_data.stock_price_performance.current_price, //TODO this has to be different
+        price: 1.1, //stock_data.stock_price_performance.current_price, //TODO this has to be different
     }))
 }
 

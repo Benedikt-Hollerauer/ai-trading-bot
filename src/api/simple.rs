@@ -1,7 +1,7 @@
-use std::time::SystemTime;
-use flutter_rust_bridge::frb;
 use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockInvestment, StockPricePerformance};
 use crate::services::{AiService, AiServiceLive, TradingApiService, TradingApiServiceLive};
+use flutter_rust_bridge::frb;
+use std::time::SystemTime;
 
 pub fn get_current_investment(
     ticker_symbol: &'static str,

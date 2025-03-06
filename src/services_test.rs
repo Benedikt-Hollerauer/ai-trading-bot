@@ -1,6 +1,6 @@
 use crate::models::Stock;
-use std::string::ToString;
 use lazy_static::lazy_static;
+use std::string::ToString;
 
 lazy_static! {
     pub static ref INVESTED_PAPER_TRADING_STOCK: Stock = Stock {

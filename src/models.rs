@@ -2,8 +2,6 @@ use crate::errors::AppErrors;
 use serde::Deserialize;
 use std::string::ToString;
 use std::time::SystemTime;
-use ibapi::accounts::Position;
-use ollama_rs::generation::options::GenerationOptions;
 
 #[derive(Debug)]
 pub struct Money {

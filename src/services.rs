@@ -1,14 +1,13 @@
-use async_trait::async_trait;
 use crate::config::CONFIG;
 use crate::errors::AppErrors;
 use crate::models::{Money, News, NewsApiResponse, Order, OrderType, Stock, StockData, StockInvestment, StockPricePerformance};
 use alpha_vantage::stock_time::StockFunction;
+use async_trait::async_trait;
 use ibapi::accounts::PositionUpdate;
 use ibapi::contracts::Contract;
 use ibapi::market_data::historical::{BarSize, ToDuration, WhatToShow};
 use ibapi::orders::{order_builder, Action};
 use ibapi::Client as IbClient;
-use ollama_rs::generation::completion::GenerationResponse;
 use ollama_rs::generation::completion::request::GenerationRequest;
 use ollama_rs::generation::options::GenerationOptions;
 use ollama_rs::Ollama;

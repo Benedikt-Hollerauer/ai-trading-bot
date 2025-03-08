@@ -1,4 +1,3 @@
-/* style.css */
 :root {
     --primary-dark: #263238;
     --secondary-dark: #37474f;
@@ -6,8 +5,14 @@
     --text-primary: #ffffff;
 }
 
-body {
+html, body {
     margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrolling */
+    height: 100%;
+}
+
+body {
     background-color: var(--primary-dark);
     color: var(--text-primary);
     font-family: 'Roboto', sans-serif;
@@ -35,19 +40,10 @@ body {
     background-color: var(--secondary-dark);
     border-radius: 8px;
     padding: 2rem;
-    margin: 1rem;
 }
 
-.input-section {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.styled-select, input[type="number"] {
+.styled-select,
+input[type="number"] {
     width: 100%;
     padding: 1rem;
     background-color: var(--primary-dark);
@@ -67,28 +63,6 @@ body {
     font-size: 1.1rem;
 }
 
-.output-section {
-    min-height: 200px;
-}
-
-.info-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-}
-
-.info-grid {
-    flex-grow: 1;
-}
-
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 1rem 0;
-}
-
 .refresh-button {
     background: none;
     border: 2px solid var(--accent-cyan);
@@ -101,14 +75,28 @@ body {
     gap: 0.5rem;
 }
 
-@media (min-width: 800px) {
-    .content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-    }
+.info-grid {
+    margin-top: 1rem;
+}
 
-    .info-section {
-        grid-column: 1 / -1;
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0;
+}
+
+/* New grid container for the four fields */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 2rem;
+    padding: 2rem;
+    height: calc(100vh - 80px); /* adjust based on header height */
+}
+
+@media (min-width: 800px) {
+    .grid-container {
+        grid-template-columns: 1fr 1fr;
     }
 }

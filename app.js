@@ -46,8 +46,8 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
     }
 });
 
-// When a new ticker is selected update the Stock Name field
-document.getElementById('stockSelect').addEventListener('change', (e) => {
+// Update stock name immediately on ticker change.
+document.getElementById('stockSelect').addEventListener('change', () => {
     const stock = getSelectedStock();
     document.getElementById('stockName').textContent = stock.name;
 });

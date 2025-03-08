@@ -31,7 +31,6 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
             return;
         }
         const data = JSON.parse(responseBody);
-        // Ensure numeric values
         const quantity = Number(data.quantity) || 0;
         const price = Number(data.price) || 0;
         currentPrice = price;
@@ -41,11 +40,22 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
       <div class="result-item">Price: €${price.toFixed(2)}</div>
       <div class="result-status">${data.message}</div>
     `;
-        updateStockInfo(stocks.find(s => s.symbol === ticker), amount);
+        updateStockInfo(getSelectedStock(), amount);
     } catch (error) {
         document.getElementById('output').textContent = `Network Error: ${error.message}`;
     }
 });
+
+// When a new ticker is selected update the Stock Name field
+document.getElementById('stockSelect').addEventListener('change', (e) => {
+    const stock = getSelectedStock();
+    document.getElementById('stockName').textContent = stock.name;
+});
+
+function getSelectedStock() {
+    const ticker = document.getElementById('stockSelect').value;
+    return stocks.find(s => s.symbol === ticker) || { symbol: ticker, name: ticker };
+}
 
 function updateStockInfo(stock, amount) {
     const amt = Number(amount) || 0;
@@ -61,11 +71,17 @@ function refreshStockData() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticker })
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text); });
+            }
+            return response.json();
+        })
         .then(data => {
             const invested = Number(data.invested_amount) || 0;
             const currPrice = Number(data.current_price) || 0;
-            document.getElementById('stockName').textContent = data.stock_name;
+            const stock = getSelectedStock();
+            document.getElementById('stockName').textContent = stock.name;
             document.getElementById('investedAmount').textContent = `€${invested.toFixed(2)}`;
             document.getElementById('currentPrice').textContent = `€${currPrice.toFixed(2)}`;
             document.getElementById('output').textContent = data.action_taken;

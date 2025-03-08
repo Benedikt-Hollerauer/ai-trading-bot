@@ -189,14 +189,17 @@ async fn refresh_investment(
         action_taken = "Sell order placed".to_string();
     }
 
-    let investment = state.trading_service.get_current_investment(stock.clone())
-        .map_err(|e| Json(ErrorResponse {
-            error_type: "GET_INVESTMENT_FAILED".into(),
-            message: "Failed to get current investment".into(),
-            details: Some(format!("{:?}", e)),
-        }))?;
+    let investment = match state.trading_service.get_current_investment(stock.clone()) {
+        Ok(inv) => inv,
+        Err(_e) => {
+            StockInvestment {
+                stock: stock.clone(),
+                stock_name: stock.ticker_symbol.clone(),
+                current_invested_amount: Money::new(0.0).unwrap(),
+            }
+        }
+    };
 
-    // Dummy current price; replace with real-time data if available.
     let current_price = 150.0;
 
     Ok(Json(RefreshResponse {

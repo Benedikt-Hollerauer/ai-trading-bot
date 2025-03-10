@@ -24,9 +24,9 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
         if (!response.ok) {
             try {
                 const errorData = JSON.parse(responseBody);
-                outputDiv.textContent = `Error [${errorData.error_type}]: ${errorData.message}`;
+                outputDiv.textContent = `Error: ${errorData}`;
             } catch {
-                outputDiv.textContent = `HTTP Error ${response.status}: ${responseBody}`;
+                outputDiv.textContent = `HTTP Error: ${response.status}: ${responseBody}`;
             }
             return;
         }
@@ -35,11 +35,11 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
         const price = Number(data.price) || 0;
         currentPrice = price;
         outputDiv.innerHTML = `
-      <div class="result-item">Order Type: <b>${data.order_type}</b></div>
-      <div class="result-item">Quantity: ${quantity.toFixed(2)} shares</div>
-      <div class="result-item">Price: €${price.toFixed(2)}</div>
-      <div class="result-status">${data.message}</div>
-    `;
+            <div class="result-item">Order Type: <b>${data.order_type}</b></div>
+            <div class="result-item">Quantity: ${quantity.toFixed(2)} shares</div>
+            <div class="result-item">Price: €${price.toFixed(2)}</div>
+            <div class="result-status">[${data.error_type}] ${data.message}: ${data.details}</div>
+        `;
         updateStockInfo(getSelectedStock(), amount);
     } catch (error) {
         document.getElementById('output').textContent = `Network Error: ${error.message}`;
@@ -78,13 +78,14 @@ function refreshStockData() {
             return response.json();
         })
         .then(data => {
+            console.log(data);
             const invested = Number(data.invested_amount) || 0;
             const currPrice = Number(data.current_price) || 0;
             const stock = getSelectedStock();
             document.getElementById('stockName').textContent = stock.name;
             document.getElementById('investedAmount').textContent = `€${invested.toFixed(2)}`;
             document.getElementById('currentPrice').textContent = `€${currPrice.toFixed(2)}`;
-            document.getElementById('output').textContent = data.action_taken;
+            document.getElementById('output').textContent = `[${data.error_type}] ${data.message}: ${data.details}`;
         })
         .catch(error => {
             document.getElementById('output').textContent = `Error: ${error.message}`;

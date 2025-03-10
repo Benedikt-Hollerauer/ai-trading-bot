@@ -49,7 +49,7 @@ pub enum OrderType {
     Sell,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StockPricePerformance {
     pub date: String,
     pub open: String,
@@ -57,7 +57,7 @@ pub struct StockPricePerformance {
     pub low: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct News {
     pub title: String,
     pub summary: String,
@@ -69,7 +69,7 @@ pub struct NewsApiResponse {
     pub feed: Vec<News>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StockData {
     pub stock: Stock,
     pub stock_price_performance: Vec<StockPricePerformance>,

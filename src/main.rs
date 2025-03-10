@@ -158,7 +158,7 @@ async fn refresh_investment(
             details: Some(format!("{:?}", e)),
         }))?;
 
-    let order_advice = state.ai_service.get_order_advice(stock_data)
+    let order_advice = state.ai_service.get_order_advice(stock_data.clone())
         .await
         .map_err(|e| Json(ErrorResponse {
             error_type: "ORDER_ADVICE_FETCH_FAILED".into(),
@@ -206,7 +206,7 @@ async fn refresh_investment(
             Json(ErrorResponse {
                 error_type: "CURRENT_PRICE_FETCH_FAILED".into(),
                 message: "Failed to retrieve the current stock price".into(),
-                details: Some(format!("Last stock price performance data: {:?}", stock_data.stock_price_performance.last())),
+                details: Some(format!("Last stock price performance data: {:?}", stock_data.clone().stock_price_performance.last())),
             })
         )
         .and_then(|stock_price_performance|

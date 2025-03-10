@@ -200,7 +200,26 @@ async fn refresh_investment(
         }
     };
 
-    let current_price = 150.0;
+    let current_price = stock_data.stock_price_performance
+        .last()
+        .ok_or(
+            Json(ErrorResponse {
+                error_type: "CURRENT_PRICE_FETCH_FAILED".into(),
+                message: "Failed to retrieve the current stock price".into(),
+                details: Some(format!("Last stock price performance data: {:?}", stock_data.stock_price_performance.last())),
+            })
+        )
+        .and_then(|stock_price_performance|
+            stock_price_performance.low
+                .parse::<f64>()
+                .map_err(|e|
+                    Json(ErrorResponse {
+                        error_type: "CURRENT_PRICE_FETCH_FAILED".into(),
+                        message: "Failed to retrieve the current stock price".into(),
+                        details: Some(format!("{:?}", e)),
+                    })
+                )
+        )?;
 
     Ok(Json(RefreshResponse {
         action_taken,

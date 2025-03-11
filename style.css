@@ -3,101 +3,114 @@
     --secondary-dark: #37474f;
     --accent-cyan: #4dd0e1;
     --text-primary: #ffffff;
-    --text-secondary: #eceff1; /* Lighter text for contrast */
-    --card-background: #455a64; /* Slightly lighter card background */
-    --button-hover: #5ee2f3; /* Slightly lighter accent for hover */
-    --border-color: #546e7a; /* Muted border color */
+    --text-secondary: #eceff1;
+    --card-background: #455a64;
+    --button-hover: #5ee2f3;
+    --border-color: #546e7a;
 }
 
 html, body {
     padding: 0;
-    margin: 0; /* Reset default margin */
-    overflow-x: hidden; /* Prevent horizontal scrollbar */
+    margin: 0;
+    overflow-x: hidden;
     height: 100vh;
     width: 100vw;
-    font-size: 16px; /* Base font size for better control */
-    line-height: 1.6; /* Improved line height for readability */
-    -webkit-font-smoothing: antialiased; /* for smoother fonts on macOS */
-    -moz-osx-font-smoothing: grayscale; /* for smoother fonts on Firefox macOS */
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
     background-color: var(--primary-dark);
     color: var(--text-primary);
     font-family: 'Roboto', sans-serif;
-    display: flex; /* Enable flexbox on body */
-    flex-direction: column; /* Stack header, main, and potentially footer vertically */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* AppBar adjustments */
 .app-bar {
     background-color: var(--primary-dark);
-    padding: 1.5rem 2rem; /* Reduced vertical padding */
+    padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .app-bar h1 {
-    margin: 0; /* Reset header margin */
-    font-size: 1.75rem; /* Slightly larger header text */
-    font-weight: 500; /* Medium font weight for header */
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 500;
 }
 
 .header-icons {
     display: flex;
-    gap: 1rem; /* Reduced gap for icon links */
+    gap: 1rem;
 }
 
 .icon-link {
-    color: var(--text-secondary); /* Use lighter text for icons */
+    color: var(--text-secondary);
     text-decoration: none;
-    opacity: 0.8; /* Slightly faded icons */
-    transition: opacity 0.3s ease; /* Smooth opacity transition on hover */
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
 }
 
 .icon-link:hover {
-    opacity: 1; /* Fully opaque icons on hover */
+    opacity: 1;
 }
 
 .card {
-    background-color: var(--card-background); /* Use the new card background color */
-    border-radius: 12px; /* More rounded corners for cards */
-    padding: 1.75rem; /* Adjusted card padding */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* More pronounced card shadow */
-    transition: transform 0.2s ease-in-out; /* Add transition for card hover effect */
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease-in-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Enable vertical scrolling within cards */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
 }
 
+.card::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+
 .card:hover {
-    transform: translateY(-3px); /* Slight lift on hover */
+    transform: translateY(-3px);
 }
 
 .card h2 {
-    margin-top: 0; /* Reset top margin for card titles */
-    margin-bottom: 1.25rem; /* Increased bottom margin for title spacing */
-    font-size: 1.5rem; /* Adjusted title font size */
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 500;
     color: var(--text-primary);
-    border-bottom: 2px solid var(--accent-cyan); /* Cyan underline for titles */
+    border-bottom: 2px solid var(--accent-cyan);
     padding-bottom: 0.5rem;
-    display: inline-block; /* Underline only as long as text */
+    display: inline-block;
 }
 
 .styled-select,
 input[type="number"] {
-    width: calc(100% - 2rem); /* Account for padding in width calculation */
-    padding: 0.8rem 1rem; /* Adjusted padding for inputs */
-    margin: 0.5rem 0; /* Added margin for vertical spacing */
-    background-color: var(--secondary-dark); /* Slightly lighter input background */
-    border: 1px solid var(--border-color); /* Use muted border color */
+    width: calc(100% - 2rem);
+    padding: 0.8rem 1rem;
+    margin: 0.5rem 0;
+    background-color: var(--secondary-dark);
+    border: 1px solid var(--border-color);
     color: var(--text-primary);
-    border-radius: 6px; /* Slightly more rounded input corners */
-    font-size: 1rem; /* Input font size */
-    appearance: none; /* Reset default appearance for consistent styling */
+    border-radius: 6px;
+    font-size: 1rem;
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    cursor: pointer; /* Pointer cursor for select & inputs */
+    cursor: pointer;
 }
 
 /* For removing the default arrow in select dropdown in IE and Edge */
@@ -127,23 +140,23 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .primary-button {
     width: 100%;
-    padding: 0.8rem 1rem; /* Adjusted button padding */
+    padding: 0.8rem 1rem;
     background-color: var(--accent-cyan);
     color: var(--primary-dark);
     border: none;
-    border-radius: 6px; /* Slightly more rounded button corners */
+    border-radius: 6px;
     cursor: pointer;
     font-size: 1.1rem;
-    font-weight: 500; /* Button text font weight */
-    transition: background-color 0.3s ease; /* Smooth background color transition */
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
 .primary-button:hover {
-    background-color: var(--button-hover); /* Lighter cyan on hover */
+    background-color: var(--button-hover);
 }
 
 .primary-button:active {
-    transform: scale(0.98); /* Slight scale down on click */
+    transform: scale(0.98);
 }
 
 
@@ -153,13 +166,13 @@ input[type="number"]::-webkit-inner-spin-button {
     border: 2px solid var(--accent-cyan);
     color: var(--accent-cyan);
     padding: 0.5rem 1rem;
-    border-radius: 6px; /* Slightly more rounded refresh button corners */
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center; /* Center icon and text horizontally */
+    justify-content: center;
     gap: 0.5rem;
-    transition: all 0.3s ease; /* Smooth transition for all properties */
+    transition: all 0.3s ease;
 }
 
 .refresh-button:hover {
@@ -168,84 +181,95 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .refresh-button:active {
-    transform: scale(0.95); /* Slight scale down on click */
+    transform: scale(0.95);
 }
 
 .info-grid {
-    margin-top: 1.5rem; /* Increased margin above info grid */
-    padding: 1rem 0; /* Add padding inside info grid */
-    border-top: 1px solid var(--border-color); /* Top border to visually separate */
+    margin-top: 1.5rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
 }
 
 .info-row {
     display: flex;
     justify-content: space-between;
-    margin: 0.75rem 0; /* Adjusted info row margin */
-    font-size: 1rem; /* Adjusted info text size */
-    color: var(--text-secondary); /* Lighter text for info */
+    margin: 0.75rem 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
 }
 
 .info-row span:first-child {
-    font-weight: 500; /* Bold first span in info row */
-    color: var(--text-primary); /* Primary text color for labels */
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 /* Grid Container for the four fields */
 .content {
-    flex: 1; /* Allow content to take up remaining vertical space */
+    flex: 1;
     padding: 1rem;
+    overflow: hidden;
 }
 
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 1.5rem; /* Increased gap between grid items */
+    grid-template-rows: 50% 50%;
+    gap: 1.5rem;
     height: 100%;
-    max-width: 1200px; /* Maximum width for content */
-    margin: 0 auto; /* Center the grid container */
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .grid-item {
-    height: auto; /* Let grid items adjust height based on content */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .output-content {
     padding: 1rem;
-    border: 1px dashed var(--accent-cyan); /* Dashed border for output field */
+    border: 1px dashed var(--accent-cyan);
     border-radius: 6px;
-    min-height: 80px; /* Minimum height for output field */
+    min-height: 80px;
     display: flex;
-    align-items: center; /* Vertically center text in output */
-    color: var(--text-secondary); /* Lighter text for output */
+    align-items: center;
+    color: var(--text-secondary);
+    overflow-y: auto; /* Enable vertical scrolling for output content */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.output-content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
 }
 
 .form-group {
-    margin-bottom: 1.25rem; /* Spacing below form groups */
+    margin-bottom: 1.25rem;
 }
 
 .form-group label {
-    display: block; /* Label on its own line */
-    margin-bottom: 0.5rem; /* Spacing below label */
-    font-weight: 500; /* Bold form labels */
-    color: var(--text-primary); /* Primary text color for labels */
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 
 @media (min-width: 800px) {
     .grid-container {
         grid-template-columns: 1fr 1fr;
+        grid-template-rows: 50% 50%;
     }
 
     .content {
-        padding: 2rem; /* More padding on larger screens */
+        padding: 2rem;
     }
 
     .card {
-        padding: 2rem; /* More card padding on larger screens */
+        padding: 2rem;
     }
 
     .app-bar {
-        padding: 2rem 3rem; /* More app-bar padding on larger screens */
+        padding: 2rem 3rem;
     }
 }

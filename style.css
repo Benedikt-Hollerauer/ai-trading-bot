@@ -3,65 +3,149 @@
     --secondary-dark: #37474f;
     --accent-cyan: #4dd0e1;
     --text-primary: #ffffff;
+    --text-secondary: #eceff1; /* Lighter text for contrast */
+    --card-background: #455a64; /* Slightly lighter card background */
+    --button-hover: #5ee2f3; /* Slightly lighter accent for hover */
+    --border-color: #546e7a; /* Muted border color */
 }
 
 html, body {
     padding: 0;
-    overflow: hidden;
+    margin: 0; /* Reset default margin */
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
     height: 100vh;
     width: 100vw;
+    font-size: 16px; /* Base font size for better control */
+    line-height: 1.6; /* Improved line height for readability */
+    -webkit-font-smoothing: antialiased; /* for smoother fonts on macOS */
+    -moz-osx-font-smoothing: grayscale; /* for smoother fonts on Firefox macOS */
 }
 
 body {
     background-color: var(--primary-dark);
     color: var(--text-primary);
     font-family: 'Roboto', sans-serif;
+    display: flex; /* Enable flexbox on body */
+    flex-direction: column; /* Stack header, main, and potentially footer vertically */
 }
 
+/* AppBar adjustments */
 .app-bar {
     background-color: var(--primary-dark);
-    padding: 2rem;
+    padding: 1.5rem 2rem; /* Reduced vertical padding */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+.app-bar h1 {
+    margin: 0; /* Reset header margin */
+    font-size: 1.75rem; /* Slightly larger header text */
+    font-weight: 500; /* Medium font weight for header */
 }
 
 .header-icons {
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem; /* Reduced gap for icon links */
 }
 
 .icon-link {
-    color: var(--text-primary);
+    color: var(--text-secondary); /* Use lighter text for icons */
     text-decoration: none;
+    opacity: 0.8; /* Slightly faded icons */
+    transition: opacity 0.3s ease; /* Smooth opacity transition on hover */
+}
+
+.icon-link:hover {
+    opacity: 1; /* Fully opaque icons on hover */
 }
 
 .card {
-    background-color: var(--secondary-dark);
-    border-radius: 8px;
-    padding: 2rem;
+    background-color: var(--card-background); /* Use the new card background color */
+    border-radius: 12px; /* More rounded corners for cards */
+    padding: 1.75rem; /* Adjusted card padding */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* More pronounced card shadow */
+    transition: transform 0.2s ease-in-out; /* Add transition for card hover effect */
+}
+
+.card:hover {
+    transform: translateY(-3px); /* Slight lift on hover */
+}
+
+.card h2 {
+    margin-top: 0; /* Reset top margin for card titles */
+    margin-bottom: 1.25rem; /* Increased bottom margin for title spacing */
+    font-size: 1.5rem; /* Adjusted title font size */
+    font-weight: 500;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--accent-cyan); /* Cyan underline for titles */
+    padding-bottom: 0.5rem;
+    display: inline-block; /* Underline only as long as text */
 }
 
 .styled-select,
 input[type="number"] {
-    width: 100%;
-    padding: 1rem;
-    background-color: var(--primary-dark);
-    border: 1px solid var(--accent-cyan);
+    width: calc(100% - 2rem); /* Account for padding in width calculation */
+    padding: 0.8rem 1rem; /* Adjusted padding for inputs */
+    margin: 0.5rem 0; /* Added margin for vertical spacing */
+    background-color: var(--secondary-dark); /* Slightly lighter input background */
+    border: 1px solid var(--border-color); /* Use muted border color */
     color: var(--text-primary);
-    border-radius: 4px;
+    border-radius: 6px; /* Slightly more rounded input corners */
+    font-size: 1rem; /* Input font size */
+    appearance: none; /* Reset default appearance for consistent styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer; /* Pointer cursor for select & inputs */
 }
+
+/* For removing the default arrow in select dropdown in IE and Edge */
+select::-ms-expand {
+    display: none;
+}
+
+.styled-select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 0.5rem);
+    background-position-y: 50%;
+    background-size: 1.5rem;
+    padding-right: 2.5rem; /* Make space for the custom arrow */
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox number input arrows removal */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; /* Chrome and Safari number input arrows removal */
+}
+
 
 .primary-button {
     width: 100%;
-    padding: 1rem;
+    padding: 0.8rem 1rem; /* Adjusted button padding */
     background-color: var(--accent-cyan);
     color: var(--primary-dark);
     border: none;
-    border-radius: 4px;
+    border-radius: 6px; /* Slightly more rounded button corners */
     cursor: pointer;
     font-size: 1.1rem;
+    font-weight: 500; /* Button text font weight */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
 }
+
+.primary-button:hover {
+    background-color: var(--button-hover); /* Lighter cyan on hover */
+}
+
+.primary-button:active {
+    transform: scale(0.98); /* Slight scale down on click */
+}
+
 
 .refresh-button {
     width: 100%;
@@ -69,39 +153,99 @@ input[type="number"] {
     border: 2px solid var(--accent-cyan);
     color: var(--accent-cyan);
     padding: 0.5rem 1rem;
-    border-radius: 4px;
+    border-radius: 6px; /* Slightly more rounded refresh button corners */
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center; /* Center icon and text horizontally */
     gap: 0.5rem;
+    transition: all 0.3s ease; /* Smooth transition for all properties */
+}
+
+.refresh-button:hover {
+    background-color: var(--accent-cyan);
+    color: var(--primary-dark);
+}
+
+.refresh-button:active {
+    transform: scale(0.95); /* Slight scale down on click */
 }
 
 .info-grid {
-    margin-top: 1rem;
+    margin-top: 1.5rem; /* Increased margin above info grid */
+    padding: 1rem 0; /* Add padding inside info grid */
+    border-top: 1px solid var(--border-color); /* Top border to visually separate */
 }
 
 .info-row {
     display: flex;
     justify-content: space-between;
-    margin: 0.5rem 0;
+    margin: 0.75rem 0; /* Adjusted info row margin */
+    font-size: 1rem; /* Adjusted info text size */
+    color: var(--text-secondary); /* Lighter text for info */
 }
 
-/* New grid container for the four fields */
+.info-row span:first-child {
+    font-weight: 500; /* Bold first span in info row */
+    color: var(--text-primary); /* Primary text color for labels */
+}
+
+/* Grid Container for the four fields */
+.content {
+    flex: 1; /* Allow content to take up remaining vertical space */
+    padding: 1rem;
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
-    gap: 1rem;
-    padding: 1rem;
+    gap: 1.5rem; /* Increased gap between grid items */
     height: 100%;
+    max-width: 1200px; /* Maximum width for content */
+    margin: 0 auto; /* Center the grid container */
 }
 
 .grid-item {
-    height: 100%;
+    height: auto; /* Let grid items adjust height based on content */
 }
+
+.output-content {
+    padding: 1rem;
+    border: 1px dashed var(--accent-cyan); /* Dashed border for output field */
+    border-radius: 6px;
+    min-height: 80px; /* Minimum height for output field */
+    display: flex;
+    align-items: center; /* Vertically center text in output */
+    color: var(--text-secondary); /* Lighter text for output */
+}
+
+.form-group {
+    margin-bottom: 1.25rem; /* Spacing below form groups */
+}
+
+.form-group label {
+    display: block; /* Label on its own line */
+    margin-bottom: 0.5rem; /* Spacing below label */
+    font-weight: 500; /* Bold form labels */
+    color: var(--text-primary); /* Primary text color for labels */
+}
+
 
 @media (min-width: 800px) {
     .grid-container {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .content {
+        padding: 2rem; /* More padding on larger screens */
+    }
+
+    .card {
+        padding: 2rem; /* More card padding on larger screens */
+    }
+
+    .app-bar {
+        padding: 2rem 3rem; /* More app-bar padding on larger screens */
     }
 }

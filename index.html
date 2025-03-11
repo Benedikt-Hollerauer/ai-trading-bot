@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stock Analyzer</title>
+    <title>Ai Trading Bot</title>
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 <header class="app-bar">
-    <h1>Stock Analyzer</h1>
+    <h1>Ai Trading Bot</h1>
     <div class="header-icons">
         <a class="icon-link" target="_blank" href="https://github.com/Benedikt-Hollerauer">
             <span class="material-icons">code</span>
@@ -23,7 +23,7 @@
         <!-- Top Left: Stock Ticker Selector -->
         <div class="grid-item">
             <div class="card">
-                <h2>Stock Ticker Selector</h2>
+                <h2>Stock Selector</h2>
                 <select id="stockSelect" class="styled-select">
                     <option value="AAPL">AAPL - Apple Inc.</option>
                     <option value="GOOGL">GOOGL - Alphabet Inc.</option>
@@ -44,14 +44,14 @@
         <!-- Bottom Left: Investment Amount and Analyze Investment Button -->
         <div class="grid-item">
             <div class="card">
-                <h2>Investment Analysis</h2>
+                <h2>Invest</h2>
                 <form id="analysisForm">
                     <div class="form-group">
                         <label>Investment Amount (€)</label>
                         <input id="amountInput" required type="number">
                     </div>
                     <button class="primary-button" type="submit">
-                        Analyze Investment
+                        Invest
                     </button>
                 </form>
             </div>
@@ -60,7 +60,7 @@
         <!-- Bottom Right: Refresh Data Button and Information Fields -->
         <div class="grid-item">
             <div class="card">
-                <h2>Refresh Data &amp; Info</h2>
+                <h2>Current Investment</h2>
                 <button class="refresh-button" onclick="refreshStockData()">
                     <span class="material-icons">refresh</span>
                     Refresh Data

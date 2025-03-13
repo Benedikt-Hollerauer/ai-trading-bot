@@ -246,3 +246,126 @@ input[type="number"]::-webkit-inner-spin-button {
         padding: 1rem;
     }
 }
+
+/* Base responsive adjustments */
+@media (max-width: 1200px) {
+    .grid-container {
+        max-width: 95%;
+    }
+}
+
+@media (max-width: 900px) {
+    .grid-container {
+        grid-template-columns: 1fr; /* Stack vertically */
+        grid-auto-flow: row;
+        max-width: 600px; /* Limit width for better readability */
+    }
+
+    .grid-item {
+        width: 100%;
+    }
+
+    .card {
+        min-height: auto; /* Allow cards to shrink */
+        padding: 1.25rem;
+    }
+
+    .app-bar {
+        padding: 1rem 1.5rem;
+    }
+
+    .app-bar h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .content {
+        padding: 0.75rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .styled-select,
+    input[type="number"],
+    .primary-button,
+    .refresh-button {
+        padding: 0.7rem;
+        font-size: 1rem;
+    }
+
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-row {
+        font-size: 0.9rem;
+    }
+
+    .output-content {
+        min-height: 100px;
+        padding: 1rem;
+    }
+}
+
+/* Handle very small screens */
+@media (max-width: 350px) {
+    .app-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .card {
+        padding: 0.75rem;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* Handle height-based responsiveness */
+@media (max-height: 700px) {
+    .content {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .card {
+        min-height: auto;
+    }
+
+    .output-content {
+        min-height: 80px;
+    }
+}
+
+/* Ensure content is scrollable on very small devices */
+@media (max-height: 500px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .content {
+        flex: none;
+    }
+}
+
+@media (orientation: portrait) {
+    .grid-container {
+        grid-template-columns: 1fr; /* Stack vertically in portrait mode */
+    }
+}
+
+@media (orientation: landscape) and (min-width: 901px) {
+    .grid-container {
+        grid-template-columns: minmax(300px, 2fr) minmax(300px, 3fr); /* Side by side in landscape */
+    }
+}

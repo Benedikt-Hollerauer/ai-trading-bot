@@ -2,10 +2,18 @@ const stocks = [
     { symbol: 'AAPL', name: 'Apple Inc.' },
     { symbol: 'GOOGL', name: 'Alphabet Inc.' },
     { symbol: 'MSFT', name: 'Microsoft Corporation' },
-    { symbol: 'AMZN', name: 'Amazon.com Inc.' }
+    { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+    { symbol: 'TSLA', name: 'Tesla, Inc.' }
 ];
 
 let currentPrice = 0;
+
+function initializeStockSelector() {
+    const stockSelect = document.getElementById('stockSelect');
+    stockSelect.innerHTML = stocks
+        .map(stock => `<option value="${stock.symbol}">${stock.symbol} - ${stock.name}</option>`)
+        .join('');
+}
 
 function analyzeInvestment() {
     const amount = document.getElementById('amountInput').value;
@@ -84,5 +92,8 @@ function refreshStockData() {
         });
 }
 
-// Initial load
-refreshStockData();
+// Modify the last line to include initialization
+document.addEventListener('DOMContentLoaded', () => {
+    initializeStockSelector();
+    refreshStockData();
+});

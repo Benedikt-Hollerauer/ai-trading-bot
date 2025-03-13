@@ -7,44 +7,36 @@ const stocks = [
 
 let currentPrice = 0;
 
-document.getElementById('analysisForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+function analyzeInvestment() {
     const amount = document.getElementById('amountInput').value;
     const ticker = document.getElementById('stockSelect').value;
     const outputDiv = document.getElementById('output');
     outputDiv.textContent = `Analyzing ${ticker} with €${amount}...`;
 
-    try {
-        const response = await fetch('/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticker, amount: parseFloat(amount) })
-        });
-        const responseBody = await response.text();
-        if (!response.ok) {
-            try {
-                const errorData = JSON.parse(responseBody);
-                outputDiv.textContent = `Error: ${errorData}`;
-            } catch {
-                outputDiv.textContent = `HTTP Error: ${response.status}: ${responseBody}`;
+    fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, amount: parseFloat(amount) })
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text); });
             }
-            return;
-        }
-        const data = JSON.parse(responseBody);
-        const quantity = Number(data.quantity) || 0;
-        const price = Number(data.price) || 0;
-        currentPrice = price;
-        outputDiv.innerHTML = `
-            <div class="result-item">Order Type: <b>${data.order_type}</b></div>
-            <div class="result-item">Quantity: ${quantity.toFixed(2)} shares</div>
-            <div class="result-item">Price: €${price.toFixed(2)}</div>
-            <div class="result-status">[${data.error_type}] ${data.message}: ${data.details}</div>
-        `;
-        updateStockInfo(getSelectedStock(), amount);
-    } catch (error) {
-        document.getElementById('output').textContent = `Network Error: ${error.message}`;
-    }
-});
+            return response.json();
+        })
+        .then(data => {
+            const quantity = Number(data.quantity) || 0;
+            const price = Number(data.price) || 0;
+            currentPrice = price;
+            outputDiv.textContent = `[${data.error_type}] ${data.message}: ${data.details}`;
+            updateStockInfo(getSelectedStock(), amount);
+        })
+        .catch(error => {
+            outputDiv.textContent = `Error: ${error.message}`;
+        });
+    
+    return false; // Prevent form submission
+}
 
 // Update stock name immediately on ticker change.
 document.getElementById('stockSelect').addEventListener('change', () => {

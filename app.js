@@ -33,11 +33,17 @@ function analyzeInvestment() {
             return response.json();
         })
         .then(data => {
-            const quantity = Number(data.quantity) || 0;
-            const price = Number(data.price) || 0;
-            currentPrice = price;
-            outputDiv.textContent = `[${data.error_type}] ${data.message}: ${data.details}`;
-            updateStockInfo(getSelectedStock(), amount);
+            if (data.error_type) {
+                // Handle error response
+                outputDiv.textContent = `[${data.error_type}] ${data.message}: ${data.details || ''}`;
+            } else {
+                // Handle successful analysis response
+                const quantity = Number(data.quantity) || 0;
+                const price = Number(data.price) || 0;
+                currentPrice = price;
+                outputDiv.textContent = `${data.message} - Order Type: ${data.order_type}`;
+                updateStockInfo(getSelectedStock(), amount);
+            }
         })
         .catch(error => {
             outputDiv.textContent = `Error: ${error.message}`;
@@ -79,13 +85,19 @@ function refreshStockData() {
         })
         .then(data => {
             console.log(data);
-            const invested = Number(data.invested_amount) || 0;
-            const currPrice = Number(data.current_price) || 0;
-            const stock = getSelectedStock();
-            document.getElementById('stockName').textContent = stock.name;
-            document.getElementById('investedAmount').textContent = `€${invested.toFixed(2)}`;
-            document.getElementById('currentPrice').textContent = `€${currPrice.toFixed(2)}`;
-            document.getElementById('output').textContent = `[${data.error_type}] ${data.message}: ${data.details}`;
+            if (data.error_type) {
+                // Handle error response
+                document.getElementById('output').textContent = `[${data.error_type}] ${data.message}: ${data.details || ''}`;
+            } else {
+                // Handle successful refresh response
+                const invested = Number(data.invested_amount) || 0;
+                const currPrice = Number(data.current_price) || 0;
+                const stock = getSelectedStock();
+                document.getElementById('stockName').textContent = stock.name;
+                document.getElementById('investedAmount').textContent = `€${invested.toFixed(2)}`;
+                document.getElementById('currentPrice').textContent = `€${currPrice.toFixed(2)}`;
+                document.getElementById('output').textContent = `Action taken: ${data.action_taken}`;
+            }
         })
         .catch(error => {
             document.getElementById('output').textContent = `Error: ${error.message}`;

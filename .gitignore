@@ -31,7 +31,7 @@ Session.vim
 .valgrindrc
 .cargo
 # Included because it is part of the test case
-!/tests/run-make/thumb-none-qemu/example/.cargo
+!/test/run-make/thumb-none-qemu/example/.cargo
 
 ## Configuration
 /config.toml
@@ -85,7 +85,7 @@ package-lock.json
 package.json
 
 ## Rustdoc GUI tests
-tests/rustdoc-gui/src/**.lock
+test/rustdoc-gui/src/**.lock
 
 ## direnv
 /.envrc
@@ -95,5 +95,7 @@ tests/rustdoc-gui/src/**.lock
 /flake.nix
 flake.lock
 /default.nix
+
+config.rs
 
 # Before adding new lines, see the comment at the top.

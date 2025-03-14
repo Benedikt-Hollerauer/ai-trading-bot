@@ -1,0 +1,388 @@
+:root {
+    --primary-dark: #263238;
+    --secondary-dark: #37474f;
+    --accent-cyan: #4dd0e1;
+    --text-primary: #ffffff;
+    --text-secondary: #eceff1;
+    --card-background: #455a64;
+    --button-hover: #5ee2f3;
+    --border-color: #546e7a;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    height: 100vh;
+    width: 100vw;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--primary-dark);
+    color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* AppBar adjustments */
+.app-bar {
+    background-color: var(--primary-dark);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.app-bar h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 500;
+}
+
+.header-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.icon-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.icon-link:hover {
+    opacity: 1;
+}
+
+.card {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    height: auto;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Enable vertical scrolling within cards */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.card::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--accent-cyan);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.styled-select,
+input[type="number"] {
+    width: calc(100% - 2rem);
+    padding: 0.8rem 1rem;
+    margin: 0.5rem 0;
+    background-color: var(--secondary-dark);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+    font-size: 1rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+/* For removing the default arrow in select dropdown in IE and Edge */
+select::-ms-expand {
+    display: none;
+}
+
+.styled-select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 0.5rem);
+    background-position-y: 50%;
+    background-size: 1.5rem;
+    padding-right: 2.5rem; /* Make space for the custom arrow */
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox number input arrows removal */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; /* Chrome and Safari number input arrows removal */
+}
+
+
+.primary-button,
+.refresh-button {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background-color: var(--accent-cyan);
+    color: var(--primary-dark);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.primary-button:hover,
+.refresh-button:hover {
+    background-color: var(--button-hover);
+}
+
+.primary-button:active,
+.refresh-button:active {
+    transform: scale(0.98);
+}
+
+.info-grid {
+    /*margin-top: 0.5rem;*/
+    /*padding: 1rem 0;*/
+    /*border-top: 1px solid var(--border-color);*/
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.75rem 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.info-row span:first-child {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Grid Container for the four fields */
+.content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow: auto;
+    min-height: 0;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: minmax(300px, 2fr) minmax(300px, 3fr);
+    gap: 1.5rem;
+    height: max-content;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.grid-item {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.output-content {
+    flex: 1;
+    padding: 1.25rem;
+    border: 1px dashed var(--accent-cyan);
+    border-radius: 6px;
+    min-height: 150px;
+    color: var(--text-secondary);
+    overflow-y: auto;
+    word-wrap: break-word;
+    margin-bottom: 1rem;
+}
+
+.output-content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+
+@media (max-width: 800px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+        grid-auto-rows: minmax(250px, auto);
+    }
+
+    .content {
+        padding: 1rem;
+    }
+}
+
+/* Base responsive adjustments */
+@media (max-width: 1200px) {
+    .grid-container {
+        max-width: 95%;
+    }
+}
+
+@media (max-width: 900px) {
+    .grid-container {
+        grid-template-columns: 1fr; /* Stack vertically */
+        grid-auto-flow: row;
+        max-width: 600px; /* Limit width for better readability */
+    }
+
+    .grid-item {
+        width: 100%;
+    }
+
+    .card {
+        min-height: auto; /* Allow cards to shrink */
+        padding: 1.25rem;
+    }
+
+    .app-bar {
+        padding: 1rem 1.5rem;
+    }
+
+    .app-bar h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .content {
+        padding: 0.75rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .styled-select,
+    input[type="number"],
+    .primary-button,
+    .refresh-button {
+        padding: 0.7rem;
+        font-size: 1rem;
+    }
+
+    .card h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-row {
+        font-size: 0.9rem;
+    }
+
+    .output-content {
+        min-height: 100px;
+        padding: 1rem;
+    }
+}
+
+/* Handle very small screens */
+@media (max-width: 350px) {
+    .app-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .card {
+        padding: 0.75rem;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* Handle height-based responsiveness */
+@media (max-height: 700px) {
+    .content {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .card {
+        min-height: auto;
+    }
+
+    .output-content {
+        min-height: 80px;
+    }
+}
+
+/* Ensure content is scrollable on very small devices */
+@media (max-height: 500px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .content {
+        flex: none;
+    }
+}
+
+@media (orientation: portrait) {
+    .grid-container {
+        grid-template-columns: 1fr; /* Stack vertically in portrait mode */
+    }
+}
+
+@media (orientation: landscape) and (min-width: 901px) {
+    .grid-container {
+        grid-template-columns: minmax(300px, 2fr) minmax(300px, 3fr); /* Side by side in landscape */
+    }
+}
+
+.auto-refresh-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.refresh-button.active {
+    background-color: #ff4444;
+}
+
+.styled-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

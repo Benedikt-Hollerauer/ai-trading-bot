@@ -61,6 +61,13 @@
                     </div>
                 </div>
                 <div id="output" class="output-content">Enter details to analyze</div>
+                <div class="auto-refresh-controls">
+                    <input type="number" id="refreshInterval" value="5" min="1" class="styled-input" style="width: 60px">
+                    <label>minutes</label>
+                    <button id="autoRefreshToggle" class="refresh-button" onclick="toggleAutoRefresh()">
+                        <span class="material-icons">play_arrow</span> Start Auto-Refresh
+                    </button>
+                </div>
                 <button class="refresh-button" onclick="refreshStockData()">
                     <span class="material-icons">refresh</span>
                     Reanalyze with AI

@@ -167,9 +167,9 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .info-grid {
-    margin-top: 1.5rem;
-    padding: 1rem 0;
-    border-top: 1px solid var(--border-color);
+    /*margin-top: 0.5rem;*/
+    /*padding: 1rem 0;*/
+    /*border-top: 1px solid var(--border-color);*/
 }
 
 .info-row {
@@ -368,4 +368,21 @@ input[type="number"]::-webkit-inner-spin-button {
     .grid-container {
         grid-template-columns: minmax(300px, 2fr) minmax(300px, 3fr); /* Side by side in landscape */
     }
+}
+
+.auto-refresh-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.refresh-button.active {
+    background-color: #ff4444;
+}
+
+.styled-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }

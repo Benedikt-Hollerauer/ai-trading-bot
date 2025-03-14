@@ -16,6 +16,10 @@ function initializeStockSelector() {
     stockSelect.innerHTML = stocks
         .map(stock => `<option value="${stock.symbol}">${stock.symbol} - ${stock.name}</option>`)
         .join('');
+    
+    // Set initial stock name
+    const initialStock = getSelectedStock();
+    document.getElementById('stockName').textContent = initialStock.name;
 }
 
 function getFormattedTimestamp() {
@@ -112,6 +116,7 @@ function updateCountdown() {
 }
 
 function refreshStockData() {
+    const amount = document.getElementById('amountInput').value;
     const ticker = document.getElementById('stockSelect').value;
     updateOutput(`Analyzing ${ticker} with €${amount}...`);
 

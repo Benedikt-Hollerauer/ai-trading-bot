@@ -32,20 +32,10 @@ impl Money {
 
 #[derive(Debug, Clone)]
 pub struct Stock {
-    ticker_symbol: String,
+    pub ticker_symbol: String,
 }
 
-impl Stock {
-    pub fn new(ticker_symbol: String) -> Stock {
-        Stock { ticker_symbol }
-    }
-
-    pub fn get_ticker_symbol(self) -> String {
-        self.ticker_symbol
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Order {
     pub stock_quantity: f64,
     pub stock: Stock,
@@ -53,13 +43,13 @@ pub struct Order {
     pub timestamp: SystemTime,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum OrderType {
     Buy,
     Sell,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StockPricePerformance {
     pub date: String,
     pub open: String,
@@ -67,7 +57,7 @@ pub struct StockPricePerformance {
     pub low: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct News {
     pub title: String,
     pub summary: String,
@@ -79,7 +69,7 @@ pub struct NewsApiResponse {
     pub feed: Vec<News>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StockData {
     pub stock: Stock,
     pub stock_price_performance: Vec<StockPricePerformance>,
@@ -89,5 +79,11 @@ pub struct StockData {
 pub struct Config<'a> {
     pub alpha_vantage_api_key: &'a str,
     pub interactive_brokers_connection_url_with_port: &'a str,
-    pub open_ai_api_key: &'a str,
+}
+
+#[derive(Debug)]
+pub struct StockInvestment {
+    pub(crate) stock: Stock,
+    pub(crate) stock_name: String,
+    pub(crate) current_invested_amount: Money,
 }

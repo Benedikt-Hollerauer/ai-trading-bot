@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ai Trading Bot</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+<header class="app-bar">
+    <h1>Ai Trading Bot</h1>
+    <div class="header-icons">
+        <a class="icon-link" target="_blank" href="https://github.com/Benedikt-Hollerauer">
+            <span class="material-icons">code</span>
+        </a>
+        <a class="icon-link" target="_blank" href="https://www.benedikt-hollerauer.com/">
+            <span class="material-icons">public</span>
+        </a>
+    </div>
+</header>
+
+<main class="content">
+    <div class="grid-container">
+        <!-- Stock Selector and Investment Amount (Left Column) -->
+        <div class="grid-item">
+            <div class="card">
+                <h2>Investment Details</h2>
+                <form id="analysisForm" onsubmit="return analyzeInvestment()">
+                    <div class="form-group">
+                        <label>Select Stock</label>
+                        <select id="stockSelect" class="styled-select">
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Investment Amount (€)</label>
+                        <input id="amountInput" required type="number">
+                    </div>
+                    <button class="primary-button" type="submit">
+                        Analyze Investment
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Analysis Output and Current Investment (Right Column) -->
+        <div class="grid-item">
+            <div class="card">
+                <h2>Investment Analysis</h2>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span>Stock Name:</span>
+                        <span id="stockName">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Invested Amount:</span>
+                        <span id="investedAmount">€0.00</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Current Price:</span>
+                        <span id="currentPrice">€0.00</span>
+                    </div>
+                </div>
+                <div id="output" class="output-content">Enter details to analyze</div>
+                <button class="refresh-button" onclick="refreshStockData()">
+                    <span class="material-icons">refresh</span>
+                    Reanalyze with AI
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>

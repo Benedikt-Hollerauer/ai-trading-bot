@@ -79,6 +79,7 @@ pub struct StockData {
 pub struct Config<'a> {
     pub alpha_vantage_api_key: &'a str,
     pub interactive_brokers_connection_url_with_port: &'a str,
+    pub ollama_model: &'a str,
 }
 
 #[derive(Debug)]

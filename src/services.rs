@@ -218,7 +218,7 @@ impl AiService for AiServiceLive {
         stock_data: StockData,
     ) -> Result<OrderType, AppErrors> {
         let ollama = Ollama::default();
-        let model = "deepseek-r1:1.5b".to_string();
+        let model = CONFIG.ollama_model.to_string();
         let options = GenerationOptions::default().temperature(0.0);
         let ticker_symbol = stock_data.stock.clone().ticker_symbol;
         let prompt = format!(
